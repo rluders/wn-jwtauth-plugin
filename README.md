@@ -10,6 +10,10 @@ This plugin provides a JSON Web Tokens authentication mechanism for [OctoberCMS]
 
 * [Angular Skeleton](https://octobercms.com/theme/rluders-angular2)
 
+# Installation
+
+[Go to the product page](https://octobercms.com/plugin/rluders-jwtauth)
+
 # Configuration
 
 You must set a secret token for your application. Do do it, on October's Backend access: *Settings > Users > JWTAuth*
