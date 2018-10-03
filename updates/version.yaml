@@ -24,3 +24,5 @@
     - Dependencies hotfix
 1.2.2:
     - License changes to GPLv3
+1.2.3:
+    - Fix get user endpoint
