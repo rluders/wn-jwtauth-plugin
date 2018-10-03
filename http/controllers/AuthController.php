@@ -366,7 +366,7 @@ class AuthController extends BaseController
     public function refreshToken()
     {
         try {
-            if (!$token = $this->auth->refresh($this->auth->parseToken())) {
+            if (!$token = $this->auth->refresh()) {
                 return response()->json(
                     [
                         'error' => 'could_not_refresh_token'
@@ -383,6 +383,8 @@ class AuthController extends BaseController
             );
         }
 
+        $this->auth->setToken($token);
+
         return response()->json(compact('token'));
     }
 
@@ -393,7 +395,7 @@ class AuthController extends BaseController
      */
     public function getUser()
     {
-        if (!$user = $this->auth->parseToken()->toUser()) {
+        if (!$user = $this->auth->user()) {
             return response()->json(
                 [
                     'error' => 'user_not_found'
