@@ -27,6 +27,13 @@ class AuthServiceProvider extends AbstractServiceProvider
     protected function bindResponses()
     {
         $this->app->bind(
+            \RLuders\JWTAuth\Http\Requests\TokenRequest::class,
+            function ($app) {
+                return new \RLuders\JWTAuth\Http\Requests\TokenRequest(input());
+            }
+        );        
+        
+        $this->app->bind(
             \RLuders\JWTAuth\Http\Requests\LoginRequest::class,
             function ($app) {
                 return new \RLuders\JWTAuth\Http\Requests\LoginRequest(input());
