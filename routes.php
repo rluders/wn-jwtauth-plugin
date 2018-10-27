@@ -41,7 +41,7 @@ Route::group(
                 )->name('api.auth.me');
 
 
-                Route::patch(
+                Route::post(
                     'refresh-token', 
                     'AuthController@refreshToken'
                 )->name('api.auth.refresh-token');
