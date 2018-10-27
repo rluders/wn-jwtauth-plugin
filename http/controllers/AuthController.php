@@ -19,7 +19,7 @@ use RLuders\JWTAuth\Http\Requests\ActivationRequest;
 use RLuders\JWTAuth\Http\Requests\ResetPasswordRequest;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use RLuders\JWTAuth\Http\Requests\ForgotPasswordRequest;
-
+use RLuders\JWTAuth\Http\Requests\TokenRequest;
 
 class AuthController extends BaseController
 {
@@ -363,10 +363,12 @@ class AuthController extends BaseController
      *
      * @return Illuminate\Http\Response
      */
-    public function refreshToken()
+    public function refreshToken(TokenRequest $request)
     {
+        $token = $request->get('token');
+
         try {
-            if (!$token = $this->auth->refresh()) {
+            if (!$token = $this->auth->refresh($token)) {
                 return response()->json(
                     [
                         'error' => 'could_not_refresh_token'
@@ -381,7 +383,7 @@ class AuthController extends BaseController
                 ],
                 Response::HTTP_FORBIDDEN
             );
-        }
+        }        
 
         $this->auth->setToken($token);
 
