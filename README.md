@@ -249,7 +249,7 @@ Here's the list of available endpoints for this plugin.
 
 ## Get User
 
-`PATCH /api/auth/me`
+`GET /api/auth/me`
 
 **Middleware**
 
