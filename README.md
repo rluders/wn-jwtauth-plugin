@@ -287,6 +287,20 @@ Here's the list of available endpoints for this plugin.
 }
 ```
 
+# Known issues
+
+Beside the fact that I'm always trying to solve the possible issues, bad things could happen. Here, an list of possible issues and how to fix it.
+
+## Note to Apache users
+
+In order to use the authorization Bearer Token you must add the following code to your `.httaccess`
+
+```
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+```
+
 # License
 
 GPLv3
