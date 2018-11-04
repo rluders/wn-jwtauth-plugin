@@ -189,7 +189,7 @@ Here's the list of available endpoints for this plugin.
 
 | Name                  | Type   | Required | Description              |
 |-----------------------|--------|----------|--------------------------|
-| code                  | string | Yes      | Reset password code      |
+| reset_password_code   | string | Yes      | Reset password code      |
 | password              | string | Yes      | Account new password     |
 | password_confirmation | string | No       | Confirm the new password |
 
