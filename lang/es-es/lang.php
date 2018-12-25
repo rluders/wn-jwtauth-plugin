@@ -57,7 +57,7 @@ return [
             ],
             'leeway' => [
                 'label' => 'Margen',
-                'comment' => Esta opción da al jwt timestamp claims cierto "margen".'
+                'comment' => 'Esta opción da al jwt timestamp claims cierto "margen".'
             ],
             'blacklist_enabled' => [
                 'label' => 'Activar lista negra',
