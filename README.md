@@ -22,7 +22,7 @@ You must set a secret token for your application. Do do it, on October's Backend
 
 Here's the list of available endpoints for this plugin.
 
-> If you are using [**Postman**](https://www.getpostman.com/), you can [click here to import the collection](https://www.getpostman.com/collections/9cac148fb57f131f939f) with all the calls that you need to test it.
+> If you are using [**Postman**](https://www.getpostman.com/), you can [click here to import the collection](https://www.getpostman.com/collections/5667c055f6f81ff3f821) with all the calls that you need to test it.
 
 ## Login
 
@@ -215,15 +215,17 @@ Here's the list of available endpoints for this plugin.
 
 ## Refresh Token
 
-`PATCH /api/auth/refresh-token`
-
-**Middleware**
-
-`jwt.auth`
+`POST /api/auth/refresh-token`
 
 **Route name**
 
 `auth.api.refresh-token`
+
+### Parameters
+
+| Name                  | Type   | Required | Description              |
+|-----------------------|--------|----------|--------------------------|
+| token                 | string | Yes      | Valid user JWToken       |
 
 ### Responses
 
