@@ -19,7 +19,7 @@ use RLuders\JWTAuth\Http\Requests\ActivationRequest;
 use RLuders\JWTAuth\Http\Requests\ResetPasswordRequest;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use RLuders\JWTAuth\Http\Requests\ForgotPasswordRequest;
-
+use RLuders\JWTAuth\Http\Requests\TokenRequest;
 
 class AuthController extends BaseController
 {
@@ -39,7 +39,7 @@ class AuthController extends BaseController
     {
         $this->auth = $auth;
     }
-    
+
     /**
      * Get login field attribute
      *
@@ -52,7 +52,7 @@ class AuthController extends BaseController
 
     /**
      * Flag for allowing registration, pulled from UserSettings
-     * 
+     *
      * @return string
      */
     public function canRegister()
@@ -68,7 +68,7 @@ class AuthController extends BaseController
      */
     protected function sendResetPasswordEmail(User $user)
     {
-        $code = implode('!', [$user->id, $user->getResetPasswordCode()]);        
+        $code = implode('!', [$user->id, $user->getResetPasswordCode()]);
         $link = $this->makeResetPasswordUrl($code);
 
         $data = [
@@ -96,7 +96,7 @@ class AuthController extends BaseController
     {
         $url = Settings::get('reset_password_url');
         $url = str_replace('{code}', $code, $url);
-        
+
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             $url = url($url);
         }
@@ -106,7 +106,7 @@ class AuthController extends BaseController
 
     /**
      * Sends the activation email to a user
-     * 
+     *
      * @param  User $user
      * @return void
      */
@@ -132,7 +132,7 @@ class AuthController extends BaseController
 
     /**
      * Returns a link used to activate the user account.
-     * 
+     *
      * @return string
      */
     protected function makeActivationUrl($code)
@@ -179,7 +179,7 @@ class AuthController extends BaseController
 
         $user = $this->auth->setToken($token)->authenticate();
 
-        if ($user->isBanned()) {            
+        if ($user->isBanned()) {
             $this->auth->parseToken()->invalidate();
             return response()->json(
                 [
@@ -363,10 +363,13 @@ class AuthController extends BaseController
      *
      * @return Illuminate\Http\Response
      */
-    public function refreshToken()
+    public function refreshToken(TokenRequest $request)
     {
+        $token = $request->get('token');
+        $this->auth->setToken($token);
+
         try {
-            if (!$token = $this->auth->refresh()) {
+            if (!$token = $this->auth->refresh($token)) {
                 return response()->json(
                     [
                         'error' => 'could_not_refresh_token'

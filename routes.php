@@ -6,7 +6,7 @@ Route::group(
         'namespace' => 'RLuders\JWTAuth\Http\Controllers'
     ],
     function () {
-        
+
         Route::post(
             'login',
             'AuthController@authenticate'
@@ -31,23 +31,21 @@ Route::group(
             'reset-password',
             'AuthController@resetPassword'
         )->name('api.auth.reset-password');
-        
+
+        Route::post(
+            'refresh-token',
+            'AuthController@refreshToken'
+        )->name('api.auth.refresh-token');
+
         Route::middleware(['jwt.auth'])->group(
-            function () {              
+            function () {
 
                 Route::get(
                     'me',
                     'AuthController@getUser'
                 )->name('api.auth.me');
-
-
-                Route::patch(
-                    'refresh-token', 
-                    'AuthController@refreshToken'
-                )->name('api.auth.refresh-token');
-
             }
         );
-        
+
     }
 );
