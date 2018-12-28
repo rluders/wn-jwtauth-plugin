@@ -26,3 +26,5 @@
     - License changes to GPLv3
 1.2.3:
     - Fix get user endpoint
+1.2.4:
+    - !!! Refresh token changes from PATCH to POST and now requires an data form parameter. Please, check the documentation or the UPDATED Postman collection.
