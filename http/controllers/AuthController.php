@@ -302,7 +302,7 @@ class AuthController extends BaseController
         $email = $request->get('email');
 
         if (!$user = User::findByEmail($email)) {
-            return reponse()->json(
+            return response()->json(
                 [
                     'error' => 'user_not_found'
                 ],

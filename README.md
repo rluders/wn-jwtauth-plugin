@@ -189,7 +189,7 @@ Here's the list of available endpoints for this plugin.
 
 | Name                  | Type   | Required | Description              |
 |-----------------------|--------|----------|--------------------------|
-| code                  | string | Yes      | Reset password code      |
+| reset_password_code   | string | Yes      | Reset password code      |
 | password              | string | Yes      | Account new password     |
 | password_confirmation | string | No       | Confirm the new password |
 
@@ -249,7 +249,7 @@ Here's the list of available endpoints for this plugin.
 
 ## Get User
 
-`PATCH /api/auth/me`
+`GET /api/auth/me`
 
 **Middleware**
 
@@ -285,6 +285,20 @@ Here's the list of available endpoints for this plugin.
 {
   error: (user_not_found)
 }
+```
+
+# Known issues
+
+Beside the fact that I'm always trying to solve the possible issues, bad things could happen. Here, an list of possible issues and how to fix it.
+
+## Note to Apache users
+
+In order to use the authorization Bearer Token you must add the following code to your `.httaccess`
+
+```
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 ```
 
 # License
