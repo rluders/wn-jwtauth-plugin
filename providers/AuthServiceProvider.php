@@ -3,9 +3,11 @@
 namespace RLuders\JWTAuth\Providers;
 
 use Config;
+use Response;
 use RainLab\User\Models\User;
 use Tymon\JWTAuth\Providers\AbstractServiceProvider;
 use RLuders\JWTAuth\Models\Settings as PluginSettings;
+use RLuders\JWTAuth\Exceptions\JsonValidationException;
 
 class AuthServiceProvider extends AbstractServiceProvider
 {
@@ -14,6 +16,13 @@ class AuthServiceProvider extends AbstractServiceProvider
      */
     public function boot()
     {
+        // Register the error handler to the validation exception
+        $this->app->error(
+            function (JsonValidationException $exception) {
+                return $exception->toArray();
+            }
+        );
+
         $this->bindResponses();
         $this->loadConfiguration();
         $this->aliasMiddleware();
@@ -31,8 +40,8 @@ class AuthServiceProvider extends AbstractServiceProvider
             function ($app) {
                 return new \RLuders\JWTAuth\Http\Requests\TokenRequest(input());
             }
-        );        
-        
+        );
+
         $this->app->bind(
             \RLuders\JWTAuth\Http\Requests\LoginRequest::class,
             function ($app) {
@@ -71,11 +80,8 @@ class AuthServiceProvider extends AbstractServiceProvider
         // Resolving the bindings above and validating it
         $this->app->resolving(
             \RLuders\JWTAuth\Http\Requests\Request::class,
-            function ($api, $app) {
-                $result = $api->validate();
-                if ($result !== true) {
-                    $result->send();
-                }
+            function ($request, $app) {
+                $request->validate();
             }
         );
     }
@@ -114,7 +120,7 @@ class AuthServiceProvider extends AbstractServiceProvider
                     'jwt.leeway',
                     'jwt.blacklist_grace_period'
                 ]
-            );            
+            );
             if ($isInteger) {
                 $value = (int)$value;
             }
