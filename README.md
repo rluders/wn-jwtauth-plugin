@@ -1,22 +1,43 @@
-# JWTAuth Plugin for OctoberCMS
+<p align="center">
+  <img src="https://octobercms.com/storage/app/uploads/public/58b/8a6/0b5/58b8a60b50133737978501.png" style="border:1px solid #ddd;width:auto;">
+</p>
 
-[![Build Status](https://travis-ci.org/rluders/oc-jwtauth-plugin.svg?branch=master)](https://travis-ci.org/rluders/oc-jwtauth-plugin)
-[![License](https://img.shields.io/github/license/rluders/oc-jwtauth-plugin.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+<p align="center">
+  <a href="https://travis-ci.org/rluders/oc-jwtauth-plugin">
+    <img src="https://travis-ci.org/rluders/oc-jwtauth-plugin.svg?branch=master">
+  </a>
+  <a href="https://octobercms.com/plugin/rluders-jwtauth">
+    <img src="https://img.shields.io/badge/OctoberCMS-Plugin-%23EE7203.svg">
+  </a>
+  <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2FHDXT4QTD7RA&source=url">
+    <img src="https://img.shields.io/badge/Donate-PayPal-green.svg">
+  </a>
+  <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
+    <img src="https://img.shields.io/github/license/rluders/oc-jwtauth-plugin.svg">
+  </a>
+</p>
 
+# Introduction
 
 This plugin provides a JSON Web Tokens authentication mechanism for [OctoberCMS](http://www.octobercms.com) integrated with RainLab.User. It's essential for your web application built with Angular, Vue.js, React or other modern Javascript frameworks.
+
 
 ## Requirements
 
 * [RainLab.User](https://github.com/rainlab/user-plugin) plugin
+* [RLuders.CORS](https://octobercms.com/plugin/rluders-cors) plugin (optional, but recommended)
 
 ## Theme
 
 * [Angular Skeleton](https://octobercms.com/theme/rluders-angular2)
 
+## Tutorials
+
+* [Creating Vue, Vuex and OctoberCMS APP - Login and Register](https://www.youtube.com/watch?v=8S3DySmMOuk) by [Watch and Learn](https://www.youtube.com/channel/UCXQC_GB5hG6PkzIhSMZ-hWA)
+
 # Installation
 
-[Go to the product page](https://octobercms.com/plugin/rluders-jwtauth)
+Yes, you can install it from the repository (but I'll not provide a documentation for that - in this case I'll assume that you know what you are doing). I strongly recommend that you install it from [product page](https://octobercms.com/plugin/rluders-jwtauth) inside the OctoberCMS Marketplace.
 
 # Configuration
 

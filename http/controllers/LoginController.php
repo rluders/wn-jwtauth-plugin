@@ -44,8 +44,7 @@ class LoginController extends Controller
         $user = $auth->setToken($token)->authenticate();
 
         if ($user->isBanned()) {
-            $auth->parseToken()->invalidate();
-            // user_is_banned
+            $auth->invalidate();
             return response()->json(
                 ['error' => 'user_is_banned'],
                 Response::HTTP_UNAUTHORIZED
@@ -53,7 +52,7 @@ class LoginController extends Controller
         }
 
         if (!$user->is_activated) {
-            $auth->parseToken()->invalidate();
+            $auth->invalidate();
             return response()->json(
                 ['error' => 'user_inactive'],
                 Response::HTTP_UNAUTHORIZED
