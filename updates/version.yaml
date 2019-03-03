@@ -31,3 +31,9 @@
 1.2.5:
     - Fix the validations issues
     - Fix issues when using RLuders.Cors Plugin
+1.3.0:
+    - The AuthController was removed and splited into Single Action Controllers
+    - Added some Traits to keep the code simple
+    - Activate user by email is now working
+    - Inactive users can't reset they passwords
+    - German language
