@@ -1,0 +1,23 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - hhvm
+
+before_script:
+  - composer self-update
+  - composer install --prefer-source --no-interaction --dev
+
+script: phpunit
+
+matrix:
+  allow_failures:
+    - php: 7.1
+    - php: 7.2
+    - php: hhvm
+  fast_finish: true
+
+notifications:
+  on_success: never
+  on_failure: always

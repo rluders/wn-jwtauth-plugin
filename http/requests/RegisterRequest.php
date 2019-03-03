@@ -3,19 +3,11 @@
 namespace RLuders\JWTAuth\Http\Requests;
 
 use RLuders\JWTAuth\Http\Requests\Request;
-use RainLab\User\Models\Settings as UserSettings;
+use RLuders\JWTAuth\Http\Requests\Traits\CheckLoginAttribute;
 
 class RegisterRequest extends Request
 {
-    /**
-     * Get login field configured by RainLab.User 
-     *
-     * @return string
-     */
-    protected function getLoginAttribute()
-    {
-        return UserSettings::get('login_attribute', UserSettings::LOGIN_EMAIL);
-    }
+    use CheckLoginAttribute;
 
     /**
      * {@inheritDoc}
@@ -44,7 +36,7 @@ class RegisterRequest extends Request
             'password' => 'required|between:4,64|confirmed',
         ];
 
-        if ($this->getLoginAttribute() == UserSettings::LOGIN_USERNAME) {
+        if ($this->isUsernameLoginAttribute()) {
             $rules['username'] = 'required|between:3,64|unique:users';
         }
 

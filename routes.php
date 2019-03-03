@@ -10,32 +10,32 @@ Route::group(
 
         Route::post(
             'login',
-            'AuthController@authenticate'
+            'LoginController'
         )->name('api.auth.login');
 
         Route::post(
             'register',
-            'AuthController@register'
+            'RegisterController'
         )->name('api.auth.register');
 
         Route::post(
             'account-activation',
-            'AuthController@accountActivation'
+            'ActivateController'
         )->name('api.auth.account-activation');
 
         Route::post(
             'forgot-password',
-            'AuthController@forgotPassword'
+            'ForgotPasswordController'
         )->name('api.auth.forgot-password');
 
         Route::post(
             'reset-password',
-            'AuthController@resetPassword'
+            'ResetPasswordController'
         )->name('api.auth.reset-password');
 
         Route::post(
             'refresh-token',
-            'AuthController@refreshToken'
+            'RefreshTokenController'
         )->name('api.auth.refresh-token');
 
         Route::middleware(['jwt.auth'])->group(
@@ -43,8 +43,9 @@ Route::group(
 
                 Route::get(
                     'me',
-                    'AuthController@getUser'
+                    'GetUserController'
                 )->name('api.auth.me');
+
             }
         );
 
