@@ -1,5 +1,9 @@
 # JWTAuth Plugin for OctoberCMS
 
+[![Build Status](https://travis-ci.org/rluders/oc-jwtauth-plugin.svg?branch=master)](https://travis-ci.org/rluders/oc-jwtauth-plugin)
+[![License](https://img.shields.io/github/license/rluders/oc-jwtauth-plugin.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+
 This plugin provides a JSON Web Tokens authentication mechanism for [OctoberCMS](http://www.octobercms.com) integrated with RainLab.User. It's essential for your web application built with Angular, Vue.js, React or other modern Javascript frameworks.
 
 ## Requirements
