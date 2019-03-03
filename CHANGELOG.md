@@ -1,5 +1,25 @@
 # Release Notes
 
+##  v1.3.0 (2019-03-03)
+
+### Changes
+
+- The AuthController was removed and splited into Single Action Controllers
+- Added some Traits to keep the code simple
+
+### Fixes
+
+- Activate user by email is now working
+- Inactive users can't reset they passwords
+
+### Added
+
+- German language
+
+## From v1.2.1 to v1.2.5
+
+- I forgot to track it here and I'm too lazy to find out the changes. ¯\_(ツ)_/¯
+
 ## v1.2.0 (2018-05-30)
 
 ### Changes

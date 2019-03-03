@@ -3,34 +3,11 @@
 namespace RLuders\JWTAuth\Http\Requests;
 
 use RLuders\JWTAuth\Http\Requests\Request;
-use RainLab\User\Models\Settings as UserSettings;
+use RLuders\JWTAuth\Http\Requests\Traits\CheckLoginAttribute;
 
 class LoginRequest extends Request
 {
-    /**
-     * Return the credentials
-     *
-     * @return array
-     */
-    public function getCredentials()
-    {
-        $login = $this->getLoginAttribute();
-
-        return [
-            $login => $this->get('login'),
-            'password' => $this->get('password')
-        ];
-    }
-
-    /**
-     * Get login field configured by RainLab.User 
-     *
-     * @return string
-     */
-    protected function getLoginAttribute()
-    {
-        return UserSettings::get('login_attribute', UserSettings::LOGIN_EMAIL);
-    }
+    use CheckLoginAttribute;
 
     /**
      * Get the validation rules that apply to the request.
@@ -40,10 +17,34 @@ class LoginRequest extends Request
     public function rules()
     {
         return [
-            'login' => $this->getLoginAttribute() == UserSettings::LOGIN_USERNAME
-                ? 'required|between:2,255'
-                : 'required|email|between:6,255',
+            'login' => $this->getLoginRules(),
             'password' => 'required|between:4,255'
+        ];
+    }
+
+    /**
+     * Get the login validation rules
+     *
+     * @return string
+     */
+    protected function getLoginRules()
+    {
+        return $this->isUsernameLoginAttribute()
+                ? 'required|between:2,255'
+                : 'required|email|between:6,255';
+    }
+
+    /**
+     * Get credentials from request
+     *
+     * @return array
+     */
+    public function getCredentials()
+    {
+        $username = $this->isUsernameLoginAttribute() ? 'username' : 'email';
+        return [
+            $username => $this->get('login'),
+            'password' => $this->get('password')
         ];
     }
 }
