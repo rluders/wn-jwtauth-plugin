@@ -23,7 +23,7 @@ class AuthServiceProvider extends AbstractServiceProvider
             }
         );
 
-        $this->bindResponses();
+        $this->bindRequests();
         $this->loadConfiguration();
         $this->aliasMiddleware();
     }
@@ -33,7 +33,7 @@ class AuthServiceProvider extends AbstractServiceProvider
      *
      * @return void
      */
-    protected function bindResponses()
+    protected function bindRequests()
     {
         $this->app->bind(
             \RLuders\JWTAuth\Http\Requests\TokenRequest::class,
