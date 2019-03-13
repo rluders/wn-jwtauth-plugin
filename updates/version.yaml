@@ -37,3 +37,5 @@
     - Activate user by email is now working
     - Inactive users can't reset they passwords
     - German language
+1.3.1:
+    - Small hotfix to fix the Carbon 2 incompatibility
