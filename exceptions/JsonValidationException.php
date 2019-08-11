@@ -17,7 +17,7 @@ class JsonValidationException extends ValidationException implements HttpExcepti
     public function getHeaders()
     {
         return [
-            'Content-tye' => 'application/json;charset=UTF-8'
+            'Content-type' => 'application/json;charset=UTF-8'
         ];
     }
 
