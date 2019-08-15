@@ -14,7 +14,8 @@
   </a>
   <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
     <img src="https://img.shields.io/github/license/rluders/oc-jwtauth-plugin.svg">
-  </a>
+  </a>      
+  <a href="https://snyk.io//test/github/rluders/oc-jwtauth-plugin?targetFile=composer.lock"><img src="https://snyk.io//test/github/rluders/oc-jwtauth-plugin/badge.svg?targetFile=composer.lock" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io//test/github/rluders/oc-jwtauth-plugin?targetFile=composer.lock" style="max-width:100%;"></a>  
 </p>
 
 # Introduction
