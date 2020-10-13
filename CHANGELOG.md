@@ -1,5 +1,27 @@
 # Release Notes
 
+##  v1.3.3
+
+### Fixes
+
+- Some mirror hotfixes
+
+### Added
+
+- Added Czech Language support
+
+##  v1.3.2
+
+### Fixes
+
+- Fix typo on JsonValidationException
+
+##  v1.3.1
+
+### Fixes
+
+- Small hotfix to fix the Carbon 2 incompatibility
+
 ##  v1.3.0 (2019-03-03)
 
 ### Changes
