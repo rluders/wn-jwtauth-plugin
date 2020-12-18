@@ -95,7 +95,7 @@ class AuthServiceProvider extends AbstractServiceProvider
     {
         // Some of default values that doesn't need to be configured by
         // the user are included on this file
-        Config::set('jwt', include realpath(__DIR__ . '/../config/jwt.php'));
+        Config::set('jwt', Config::get('rluders.jwtauth::jwt'));
 
         $attributes = PluginSettings::instance()->attributes;
         foreach ($attributes as $attr => $value) {
