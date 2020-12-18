@@ -58,6 +58,7 @@ class LoginController extends Controller
                 Response::HTTP_UNAUTHORIZED
             );
         }
+
         Event::fire('rainlab.user.login', $user);
         return response()->json(compact('token', 'user'));
     }
