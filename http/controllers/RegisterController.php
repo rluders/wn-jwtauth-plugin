@@ -102,7 +102,8 @@ class RegisterController extends Controller
         $this->sendMail(
             $user->email,
             $user->name,
-            'rainlab.user::mail.activate', $data
+            'rainlab.user::mail.activate',
+            $data
         );
     }
 

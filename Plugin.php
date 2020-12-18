@@ -80,17 +80,14 @@ class Plugin extends PluginBase
         $this->app->alias('JWTAuth', \RLuders\JWTAuth\Facades\JWTAuth::class);
 
         // Handle error
-        $this->app->error(function(\Exception $e) {
-            $error = [
+        $this->app->error(function (\Exception $e) {
+            return [
                 'error' => [
-                    'code' => 'INTERNAL_ERROR',
+                    'code' => 'internal_error',
                     'http_code' => 500,
                     'message' => $e->getMessage(),
                 ],
             ];
-
-            // if (Config::get('app.debug') $error['trace'] = $e->getTrace();
-            return $error;
         });
     }
 }

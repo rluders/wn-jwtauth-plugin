@@ -3,12 +3,9 @@
 namespace RLuders\JWTAuth\Http\Requests;
 
 use RLuders\JWTAuth\Http\Requests\Request;
-use RLuders\JWTAuth\Http\Requests\Traits\CheckLoginAttribute;
 
 class RegisterRequest extends Request
 {
-    use CheckLoginAttribute;
-
     /**
      * {@inheritDoc}
      */
@@ -36,7 +33,7 @@ class RegisterRequest extends Request
             'password' => 'required|between:4,64|confirmed',
         ];
 
-        if ($this->isUsernameLoginAttribute()) {
+        if ($this->has("username")) {
             $rules['username'] = 'required|between:3,64|unique:users';
         }
 
