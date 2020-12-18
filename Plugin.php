@@ -81,7 +81,6 @@ class Plugin extends PluginBase
 
         // Handle error
         $this->app->error(function (\Exception $e) {
-            // @TODO Handle error types.
             return [
                 'error' => [
                     'code' => 'internal_error',

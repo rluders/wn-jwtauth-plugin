@@ -46,3 +46,6 @@
     - Mirror hotfixes
 1.4.0:
     - Dependencies updated
+    - Gives you the possibity to overwrite the configuration file
+    - Fix issues at register that was causing 500 errors when username was present at the request
+    - Handle 500 error codes
