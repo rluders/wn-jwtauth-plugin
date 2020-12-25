@@ -9,32 +9,30 @@
   <a href="https://octobercms.com/plugin/rluders-jwtauth">
     <img src="https://img.shields.io/badge/OctoberCMS-Plugin-%23EE7203.svg">
   </a>
-  <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2FHDXT4QTD7RA&source=url">
-    <img src="https://img.shields.io/badge/Donate-PayPal-green.svg">
+  <a href="https://www.patreon.com/rluders">
+    <img src="https://img.shields.io/badge/Support_on-Patreon-green.svg">
   </a>
   <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
     <img src="https://img.shields.io/github/license/rluders/oc-jwtauth-plugin.svg">
-  </a>      
-  <a href="https://snyk.io//test/github/rluders/oc-jwtauth-plugin?targetFile=composer.lock"><img src="https://snyk.io//test/github/rluders/oc-jwtauth-plugin/badge.svg?targetFile=composer.lock" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io//test/github/rluders/oc-jwtauth-plugin?targetFile=composer.lock" style="max-width:100%;"></a>  
+  </a>
 </p>
 
 # Introduction
 
 This plugin provides a JSON Web Tokens authentication mechanism for [OctoberCMS](http://www.octobercms.com) integrated with RainLab.User. It's essential for your web application built with Angular, Vue.js, React or other modern Javascript frameworks.
 
-
 ## Requirements
 
-* [RainLab.User](https://github.com/rainlab/user-plugin) plugin
-* [RLuders.CORS](https://octobercms.com/plugin/rluders-cors) plugin (optional, but recommended)
+- [RainLab.User](https://github.com/rainlab/user-plugin) plugin
+- [RLuders.CORS](https://octobercms.com/plugin/rluders-cors) plugin (optional, but recommended)
 
 ## Theme
 
-* [Angular Skeleton](https://octobercms.com/theme/rluders-angular2)
+- [Angular Skeleton](https://octobercms.com/theme/rluders-angular2)
 
 ## Tutorials
 
-* [Creating Vue, Vuex and OctoberCMS APP - Login and Register](https://www.youtube.com/watch?v=8S3DySmMOuk) by [Watch and Learn](https://www.youtube.com/channel/UCXQC_GB5hG6PkzIhSMZ-hWA)
+- [Creating Vue, Vuex and OctoberCMS APP - Login and Register](https://www.youtube.com/watch?v=8S3DySmMOuk) by [Watch and Learn](https://www.youtube.com/channel/UCXQC_GB5hG6PkzIhSMZ-hWA)
 
 # Installation
 
@@ -42,7 +40,7 @@ Yes, you can install it from the repository (but I'll not provide a documentatio
 
 # Configuration
 
-You must set a secret token for your application. Do do it, on October's Backend access: *Settings > Users > JWTAuth*
+You must set a secret token for your application. Do do it, on October's Backend access: _Settings > Users > JWTAuth_
 
 # Usage
 
@@ -60,10 +58,10 @@ Here's the list of available endpoints for this plugin.
 
 ### Parameters
 
-| Name              | Type   | Required | Description               |
-|-------------------|--------|----------|---------------------------|
-| login            | string | Yes      | Account login attribute   |
-| password          | string | Yes      | Account password          |
+| Name     | Type   | Required | Description             |
+| -------- | ------ | -------- | ----------------------- |
+| login    | string | Yes      | Account login attribute |
+| password | string | Yes      | Account password        |
 
 > The field `login` value can be the account `email` or `username`. You can select it on `RainLab.User` configuration what field should be used for login.
 
@@ -75,8 +73,8 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  token: (string),
-  user: (object)
+  "token": string,
+  "user": object
 }
 ```
 
@@ -86,7 +84,11 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  error: (invalid_credentials|could_not_create_token|user_inactive|user_is_banned)
+  "error":
+    invalid_credentials |
+    could_not_create_token |
+    user_inactive |
+    user_is_banned
 }
 ```
 
@@ -101,7 +103,7 @@ Here's the list of available endpoints for this plugin.
 ### Parameters
 
 | Name                  | Type   | Required | Description              |
-|-----------------------|--------|----------|--------------------------|
+| --------------------- | ------ | -------- | ------------------------ |
 | username              | string | No       | Account username         |
 | email                 | string | Yes      | Account email            |
 | password              | string | Yes      | Account password         |
@@ -125,7 +127,7 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  error: (object|registration_disabled)
+  "error": object | registration_disabled
 }
 ```
 
@@ -133,7 +135,6 @@ Here's the list of available endpoints for this plugin.
 
 - `rainlab.user.beforeRegister`
 - `rainlab.user.register`
-
 
 ## Account Activation
 
@@ -146,7 +147,7 @@ Here's the list of available endpoints for this plugin.
 ### Parameters
 
 | Name            | Type   | Required | Description             |
-|-----------------|--------|----------|-------------------------|
+| --------------- | ------ | -------- | ----------------------- |
 | activation_code | string | Yes      | Account activation code |
 
 ### Responses
@@ -165,7 +166,7 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  error: (invalid_activation_code|invalid_user|user_not_found)
+  "error": invalid_activation_code | invalid_user | user_not_found
 }
 ```
 
@@ -180,7 +181,7 @@ Here's the list of available endpoints for this plugin.
 ### Parameters
 
 | Name  | Type   | Required | Description   |
-|-------|--------|----------|---------------|
+| ----- | ------ | -------- | ------------- |
 | email | string | Yes      | Account email |
 
 ### Responses
@@ -199,7 +200,7 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  error: (user_not_found)
+  "error": user_not_found
 }
 ```
 
@@ -214,7 +215,7 @@ Here's the list of available endpoints for this plugin.
 ### Parameters
 
 | Name                  | Type   | Required | Description              |
-|-----------------------|--------|----------|--------------------------|
+| --------------------- | ------ | -------- | ------------------------ |
 | reset_password_code   | string | Yes      | Reset password code      |
 | password              | string | Yes      | Account new password     |
 | password_confirmation | string | No       | Confirm the new password |
@@ -235,7 +236,8 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  error: (invalid_reset_password_code|invalid_user|invalid_reset_password_code)
+  "error":
+    invalid_reset_password_code | invalid_user | invalid_reset_password_code
 }
 ```
 
@@ -249,9 +251,9 @@ Here's the list of available endpoints for this plugin.
 
 ### Parameters
 
-| Name                  | Type   | Required | Description              |
-|-----------------------|--------|----------|--------------------------|
-| token                 | string | Yes      | Valid user JWToken       |
+| Name  | Type   | Required | Description        |
+| ----- | ------ | -------- | ------------------ |
+| token | string | Yes      | Valid user JWToken |
 
 ### Responses
 
@@ -261,7 +263,7 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  token: (string)
+  "token": string
 }
 ```
 
@@ -271,7 +273,7 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  error: (could_not_refresh_token|given_token_was_blacklisted)
+  "error": could_not_refresh_token | given_token_was_blacklisted
 }
 ```
 
@@ -289,9 +291,9 @@ Here's the list of available endpoints for this plugin.
 
 ### Parameters
 
-| Name     | Type   | Required | Description               |
-|----------|--------|----------|---------------------------|
-| token    | string | Yes      | Valid token               |
+| Name  | Type   | Required | Description |
+| ----- | ------ | -------- | ----------- |
+| token | string | Yes      | Valid token |
 
 ### Responses
 
@@ -301,7 +303,7 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  user: (object)
+  "user": object
 }
 ```
 
@@ -311,7 +313,7 @@ Here's the list of available endpoints for this plugin.
 
 ```json
 {
-  error: (user_not_found)
+  "error": user_not_found
 }
 ```
 
