@@ -81,6 +81,10 @@ class Plugin extends PluginBase
 
         // Handle error
         $this->app->error(function (\Exception $e) {
+            if (!request()->isJson()) {
+                return;
+            }
+
             return [
                 'error' => [
                     'code' => 'internal_error',

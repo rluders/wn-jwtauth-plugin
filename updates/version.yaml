@@ -49,3 +49,6 @@
     - Gives you the possibity to overwrite the configuration file
     - Fix issues at register that was causing 500 errors when username was present at the request
     - Handle 500 error codes
+1.4.1:
+    - Adding support to Laravel 6
+    - Improving error handling
