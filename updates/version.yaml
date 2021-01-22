@@ -52,3 +52,5 @@
 1.4.1:
     - Adding support to Laravel 6
     - Improving error handling
+1.4.2:
+    - Fixes dependencies that was causing issues related to Carbon
