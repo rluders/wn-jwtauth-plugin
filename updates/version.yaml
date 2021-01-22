@@ -54,3 +54,5 @@
     - Improving error handling
 1.4.2:
     - Fixes dependencies that was causing issues related to Carbon
+1.4.3:
+    - (REALLY) Fixes the dependencies.
