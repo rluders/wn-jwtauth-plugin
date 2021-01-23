@@ -10,7 +10,7 @@ return [
     ],
     'settings' => [
         'menu_label' => 'JWTAuth',
-        'menu_description' => 'Configure the JWTAuth',
+        'menu_description' => 'Configurar o JWTAuth',
         'fields' => [
             'secret' => [
                 'label' => 'JWT Segredo',
