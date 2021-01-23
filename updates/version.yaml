@@ -56,3 +56,7 @@
     - Fixes dependencies that was causing issues related to Carbon
 1.4.3:
     - (REALLY) Fixes the dependencies.
+1.4.4:
+    - Updates dependencies
+    - Fix language support
+    - Adds French language support
