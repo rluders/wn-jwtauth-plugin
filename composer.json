@@ -28,8 +28,8 @@
   },
   "require": {
     "php": ">=7.2",
-    "composer/installers": "^1.0",
-    "laravel/framework": "~6",
+    "composer/installers": "~1.0",
+    "rainlab/user-plugin": "~1.0",
     "tymon/jwt-auth": "^1.0.2"
   },
   "minimum-stability": "dev",

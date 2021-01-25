@@ -7,7 +7,6 @@ Route::group(
         'middleware' => ['api'],
     ],
     function () {
-
         Route::post(
             'login',
             'LoginController'
@@ -40,14 +39,11 @@ Route::group(
 
         Route::middleware(['jwt.auth'])->group(
             function () {
-
                 Route::get(
                     'me',
                     'GetUserController'
                 )->name('api.auth.me');
-
             }
         );
-
     }
 );
