@@ -7,7 +7,7 @@
     <img src="https://travis-ci.org/rluders/oc-jwtauth-plugin.svg?branch=main">
   </a>
   <a href="https://wintercms.com/plugin/rluders-jwtauth">
-    <img src="https://img.shields.io/badge/WinternCMS-Plugin-%23EE7203.svg">
+    <img src="https://img.shields.io/badge/Winter CMS-Plugin-%23EE7203.svg">
   </a>
   <a href="https://www.patreon.com/rluders">
     <img src="https://img.shields.io/badge/Support_on-Patreon-green.svg">
