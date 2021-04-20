@@ -25,7 +25,7 @@ class LoginController extends Controller
     ) {
         $credentials = $request->getCredentials();
 
-        Event::fire('rainlab.user.beforeAuthenticate', [$this, $credentials]);
+        Event::fire('Winter.User.beforeAuthenticate', [$this, $credentials]);
 
         try {
             if (!$token = $auth->attempt($credentials)) {
@@ -59,7 +59,7 @@ class LoginController extends Controller
             );
         }
 
-        Event::fire('rainlab.user.login', $user);
+        Event::fire('Winter.User.login', $user);
         return response()->json(compact('token', 'user'));
     }
 }

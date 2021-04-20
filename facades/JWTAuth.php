@@ -2,7 +2,7 @@
 
 namespace RLuders\JWTAuth\Facades;
 
-use October\Rain\Support\Facade;
+use Winter\Storm\Support\Facade;
 
 class JWTAuth extends Facade
 {

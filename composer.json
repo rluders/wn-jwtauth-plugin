@@ -1,14 +1,15 @@
 {
-  "name": "rluders/jwtauth",
-  "type": "october-plugin",
-  "description": "JSON Web Token Authentication plugin for OctoberCMS",
+  "name": "rluders/wn-jwtauth-plugin",
+  "type": "winter-plugin",
+  "description": "JSON Web Token Authentication plugin for Winter CMS",
   "keywords": [
-    "october",
+    "winter",
     "cms",
-    "octobercms",
+    "wintercms",
     "api",
     "authentication",
-    "json web token",
+    "json",
+    "web token",
     "jwt"
   ],
   "homepage": "http://www.luders.com.br",
@@ -29,7 +30,7 @@
   "require": {
     "php": ">=7.0",
     "composer/installers": "~1.0",
-    "rainlab/user-plugin": "~1.0",
+    "winter/wn-user-plugin": "~2.0",
     "tymon/jwt-auth": "~0.5|^1.0"
   },
   "minimum-stability": "dev",

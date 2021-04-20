@@ -4,7 +4,7 @@ namespace RLuders\JWTAuth\Providers;
 
 use Config;
 use Response;
-use RainLab\User\Models\User;
+use Winter\User\Models\User;
 use Tymon\JWTAuth\Providers\AbstractServiceProvider;
 use RLuders\JWTAuth\Models\Settings as PluginSettings;
 use RLuders\JWTAuth\Exceptions\JsonValidationException;

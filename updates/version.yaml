@@ -5,7 +5,7 @@
 1.1.1:
     - Ads JWTAuth Facade
     - Ads JWTFactory Facade
-    - Tested with October CMS build 428 (Laravel 5.5 and last RainLab.User 1.4.3)
+    - Tested with Winter CMS build 428 (Laravel 5.5 and last Winter.User 1.4.3)
 1.1.2:
     - Some email URL fixes
 1.1.3:
@@ -14,7 +14,7 @@
     - Small fix for the refresh route
     - Adding the user to the refresh route response
 1.1.5:
-    - Using the loginAttribute from RainLab.User
+    - Using the loginAttribute from Winter.User
     - Adding support to Brazilian Portuguese
 1.1.6:
     - Handling with Blacklisted tokens

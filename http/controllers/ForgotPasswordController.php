@@ -61,7 +61,7 @@ class ForgotPasswordController extends Controller
         $this->sendMail(
             $user->email,
             $user->name,
-            'rainlab.user::mail.restore',
+            'Winter.User::mail.restore',
             $data
         );
     }

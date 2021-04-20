@@ -79,9 +79,9 @@ return [
 
                     <p><strong>Mesmo domínio</strong>: Neste caso só é preciso informar o URI
                     e o sistema irá considerar que o URL base é o mesmo que o da instalação
-                    do OctoberCMS<p>
+                    do Winter CMS<p>
 
-                    <p><strong>Domínio externo</strong>: Se o OctoberCMS e a aplicação de front-end
+                    <p><strong>Domínio externo</strong>: Se o Winter CMS e a aplicação de front-end
                     estão hospedados em domínios diferentes é preciso especificar o URL completo.</p>
 
                     <p>Também é importante lembrar que ambos os URLs têm de ter o parâmetro 
