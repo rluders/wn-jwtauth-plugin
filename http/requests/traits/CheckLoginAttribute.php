@@ -2,20 +2,20 @@
 
 namespace RLuders\JWTAuth\Http\Requests\Traits;
 
-use RainLab\User\Models\Settings as RainLabUserSettings;
+use Winter\User\Models\Settings as WinterUserSettings;
 
 trait CheckLoginAttribute
 {
     /**
-     * Check if RainLab user is using the username as login field
+     * Check if Winter user is using the username as login field
      *
      * @return boolean
      */
     protected function isUsernameLoginAttribute()
     {
-        return RainLabUserSettings::get(
+        return WinterUserSettings::get(
             'login_attribute',
-            RainLabUserSettings::LOGIN_EMAIL
-        ) == RainLabUserSettings::LOGIN_USERNAME;
+            WinterUserSettings::LOGIN_EMAIL
+        ) == WinterUserSettings::LOGIN_USERNAME;
     }
 }

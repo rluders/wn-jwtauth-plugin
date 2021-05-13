@@ -79,9 +79,9 @@ return [
 
                     <p><strong>Domaine identique : </strong>Dans ce cas, vous devez juste indiquer l'URI, 
                     et le système considèrera que l'URL de base est la même que celle de votre 
-                    installation OctoberCMS.<p>
+                    installation Winter CMS.<p>
 
-                    <p><strong>Domaine Externe : </strong>Si votre OctoberCMS et votre application front-end 
+                    <p><strong>Domaine Externe : </strong>Si votre Winter CMS et votre application front-end 
                     sont hébergées sur differents domaines vous devez spécifier l'URL complète.</p>
 
                     <p>Il est aussi important de noter que les deux URLs doivent avoir le paramètre  

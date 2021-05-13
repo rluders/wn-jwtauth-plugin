@@ -11,7 +11,7 @@ use RLuders\JWTAuth\Classes\JWTAuth;
 use RLuders\JWTAuth\Models\Settings;
 use RLuders\JWTAuth\Http\Requests\RegisterRequest;
 use RLuders\JWTAuth\Http\Controllers\Traits\CanMakeUrl;
-use RainLab\User\Models\Settings as RainLabUserSettings;
+use Winter\User\Models\Settings as WinterUserSettings;
 use RLuders\JWTAuth\Http\Controllers\Traits\CanSendMail;
 
 class RegisterController extends Controller
@@ -40,12 +40,12 @@ class RegisterController extends Controller
 
         $data = $request->all();
 
-        Event::fire('rainlab.user.beforeRegister', [&$data]);
+        Event::fire('Winter.User.beforeRegister', [&$data]);
 
         $activationMode = $this->getActivationMode();
         $user = $auth->register($data, ($activationMode == 'auto'));
 
-        Event::fire('rainlab.user.register', [$user, $data]);
+        Event::fire('Winter.User.register', [$user, $data]);
 
         if ($activationMode == 'email') {
             $this->sendActivationEmail($user);
@@ -61,7 +61,7 @@ class RegisterController extends Controller
      */
     protected function canRegister()
     {
-        return RainLabUserSettings::get('allow_registration', true);
+        return WinterUserSettings::get('allow_registration', true);
     }
 
     /**
@@ -71,10 +71,10 @@ class RegisterController extends Controller
      */
     protected function getActivationMode()
     {
-        switch (RainLabUserSettings::get('activate_mode')) {
-            case RainLabUserSettings::ACTIVATE_USER:
+        switch (WinterUserSettings::get('activate_mode')) {
+            case WinterUserSettings::ACTIVATE_USER:
                 return 'email';
-            case RainLabUserSettings::ACTIVATE_AUTO:
+            case WinterUserSettings::ACTIVATE_AUTO:
                 return 'auto';
         }
 
@@ -102,7 +102,7 @@ class RegisterController extends Controller
         $this->sendMail(
             $user->email,
             $user->name,
-            'rainlab.user::mail.activate',
+            'Winter.User::mail.activate',
             $data
         );
     }

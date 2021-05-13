@@ -1,13 +1,13 @@
 <p align="center">
-  <img src="https://octobercms.com/storage/app/uploads/public/58b/8a6/0b5/58b8a60b50133737978501.png" style="border:1px solid #ddd;width:auto;">
+  <img src="https://wintercms.com/storage/app/uploads/public/58b/8a6/0b5/58b8a60b50133737978501.png" style="border:1px solid #ddd;width:auto;">
 </p>
 
 <p align="center">
   <a href="https://travis-ci.org/rluders/oc-jwtauth-plugin">
     <img src="https://travis-ci.org/rluders/oc-jwtauth-plugin.svg?branch=main">
   </a>
-  <a href="https://octobercms.com/plugin/rluders-jwtauth">
-    <img src="https://img.shields.io/badge/OctoberCMS-Plugin-%23EE7203.svg">
+  <a href="https://wintercms.com/plugin/rluders-jwtauth">
+    <img src="https://img.shields.io/badge/Winter CMS-Plugin-%23EE7203.svg">
   </a>
   <a href="https://www.patreon.com/rluders">
     <img src="https://img.shields.io/badge/Support_on-Patreon-green.svg">
@@ -19,28 +19,28 @@
 
 # Introduction
 
-This plugin provides a JSON Web Tokens authentication mechanism for [OctoberCMS](http://www.octobercms.com) integrated with RainLab.User. It's essential for your web application built with Angular, Vue.js, React or other modern Javascript frameworks.
+This plugin provides a JSON Web Tokens authentication mechanism for [Winter CMS](http://www.wintercms.com) integrated with Winter.User. It's essential for your web application built with Angular, Vue.js, React or other modern Javascript frameworks.
 
 ## Requirements
 
-- [RainLab.User](https://github.com/rainlab/user-plugin) plugin
-- [RLuders.CORS](https://octobercms.com/plugin/rluders-cors) plugin (optional, but recommended)
+- [Winter.User](https://github.com/Winter/User-plugin) plugin
+- [RLuders.CORS](https://wintercms.com/plugin/rluders-cors) plugin (optional, but recommended)
 
 ## Theme
 
-- [Angular Skeleton](https://octobercms.com/theme/rluders-angular2)
+- [Angular Skeleton](https://wintercms.com/theme/rluders-angular2)
 
 ## Tutorials
 
-- [Creating Vue, Vuex and OctoberCMS APP - Login and Register](https://www.youtube.com/watch?v=8S3DySmMOuk) by [Watch and Learn](https://www.youtube.com/channel/UCXQC_GB5hG6PkzIhSMZ-hWA)
+- [Creating Vue, Vuex and Winter CMS APP - Login and Register](https://www.youtube.com/watch?v=8S3DySmMOuk) by [Watch and Learn](https://www.youtube.com/channel/UCXQC_GB5hG6PkzIhSMZ-hWA)
 
 # Installation
 
-Yes, you can install it from the repository (but I'll not provide a documentation for that - in this case I'll assume that you know what you are doing). I strongly recommend that you install it from [product page](https://octobercms.com/plugin/rluders-jwtauth) inside the OctoberCMS Marketplace.
+Yes, you can install it from the repository (but I'll not provide a documentation for that - in this case I'll assume that you know what you are doing). I strongly recommend that you install it from [product page](https://wintercms.com/plugin/rluders-jwtauth) inside the Winter CMS Marketplace.
 
 # Configuration
 
-You must set a secret token for your application. Do do it, on October's Backend access: _Settings > Users > JWTAuth_
+You must set a secret token for your application. Do do it, on Winter's Backend access: _Settings > Users > JWTAuth_
 
 # Usage
 
@@ -63,7 +63,7 @@ Here's the list of available endpoints for this plugin.
 | login    | string | Yes      | Account login attribute |
 | password | string | Yes      | Account password        |
 
-> The field `login` value can be the account `email` or `username`. You can select it on `RainLab.User` configuration what field should be used for login.
+> The field `login` value can be the account `email` or `username`. You can select it on `Winter.User` configuration what field should be used for login.
 
 ### Responses
 
@@ -109,7 +109,7 @@ Here's the list of available endpoints for this plugin.
 | password              | string | Yes      | Account password         |
 | password_confirmation | string | No       | Confirm the new password |
 
-> The field `username` can be **required**. It depends of your `RainLab.User` configuration.
+> The field `username` can be **required**. It depends of your `Winter.User` configuration.
 
 ### Responses
 
@@ -133,8 +133,8 @@ Here's the list of available endpoints for this plugin.
 
 ### Supported events
 
-- `rainlab.user.beforeRegister`
-- `rainlab.user.register`
+- `Winter.User.beforeRegister`
+- `Winter.User.register`
 
 ## Account Activation
 

@@ -2,7 +2,8 @@
 
 namespace RLuders\JWTAuth;
 
-use Config;
+use App, Config;
+use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
 use System\Classes\SettingsManager;
 use RLuders\JWTAuth\Models\Settings as PluginSettings;
@@ -17,7 +18,7 @@ class Plugin extends PluginBase
      *
      * @var array
      */
-    public $require = ['RainLab.User'];
+    public $require = ['Winter.User'];
 
     /**
      * Returns information about this plugin.
@@ -76,8 +77,9 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        $this->app->register(\RLuders\JWTAuth\Providers\AuthServiceProvider::class);
-        $this->app->alias('JWTAuth', \RLuders\JWTAuth\Facades\JWTAuth::class);
+        App::register('\RLuders\JWTAuth\Providers\AuthServiceProvider');
+        $alias = AliasLoader::getInstance();
+        $alias->alias('JWTAuth', '\RLuders\JWTAuth\Facades\JWTAuth');
 
         // Handle error
         $this->app->error(function (\Exception $e) {
