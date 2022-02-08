@@ -37,7 +37,7 @@ This plugin provides a JSON Web Tokens authentication mechanism for [Winter CMS]
 # Installation
 
 ```sh
-$ composer require rluders/wn-jwtauth-plugin
+$ composer require rluders/jwtauth
 ```
 
 # Configuration
