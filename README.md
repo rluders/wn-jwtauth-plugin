@@ -7,7 +7,7 @@
     <img src="https://travis-ci.org/rluders/oc-jwtauth-plugin.svg?branch=main">
   </a>
   <a href="https://wintercms.com/plugin/rluders-jwtauth">
-    <img src="https://img.shields.io/badge/Winter CMS-Plugin-%23EE7203.svg">
+    <img src="https://img.shields.io/badge/Winter%20CMS-Plugin-%23EE7203.svg">
   </a>
   <a href="https://www.patreon.com/rluders">
     <img src="https://img.shields.io/badge/Support_on-Patreon-green.svg">
@@ -19,11 +19,11 @@
 
 # Introduction
 
-This plugin provides a JSON Web Tokens authentication mechanism for [Winter CMS](http://www.wintercms.com) integrated with Winter.User. It's essential for your web application built with Angular, Vue.js, React or other modern Javascript frameworks.
+This plugin provides a JSON Web Tokens authentication mechanism for [Winter CMS](http://www.wintercms.com) integrated with `Winter.User`. It's essential for your web application built with Angular, Vue.js, React or other modern Javascript frameworks.
 
 ## Requirements
 
-- [Winter.User](https://github.com/Winter/User-plugin) plugin
+- [Winter.User](https://github.com/wintercms/wn-user-plugin) plugin
 - [RLuders.CORS](https://wintercms.com/plugin/rluders-cors) plugin (optional, but recommended)
 
 ## Theme
@@ -36,7 +36,9 @@ This plugin provides a JSON Web Tokens authentication mechanism for [Winter CMS]
 
 # Installation
 
-Yes, you can install it from the repository (but I'll not provide a documentation for that - in this case I'll assume that you know what you are doing). I strongly recommend that you install it from [product page](https://wintercms.com/plugin/rluders-jwtauth) inside the Winter CMS Marketplace.
+```sh
+$ composer require rluders/wn-jwtauth-plugin
+```
 
 # Configuration
 
