@@ -9,12 +9,12 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class JsonValidationException extends ValidationException implements HttpExceptionInterface
 {
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return Response::HTTP_UNPROCESSABLE_ENTITY;
     }
 
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return [
             'Content-type' => 'application/json;charset=UTF-8'
