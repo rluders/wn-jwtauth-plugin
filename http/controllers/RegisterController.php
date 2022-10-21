@@ -102,7 +102,7 @@ class RegisterController extends Controller
         $this->sendMail(
             $user->email,
             $user->name,
-            'Winter.User::mail.activate',
+            'winter.user::mail.activate',
             $data
         );
     }
