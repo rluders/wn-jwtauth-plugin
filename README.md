@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://octobercms.com/storage/app/uploads/public/58b/8a6/0b5/58b8a60b50133737978501.png" style="border:1px solid #ddd;width:auto;">
+  <img src="jwt.png" style="border:1px solid #ddd;width:auto;">
 </p>
 
 <p align="center">
