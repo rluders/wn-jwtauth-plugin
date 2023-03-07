@@ -4,7 +4,7 @@ namespace RLuders\JWTAuth\Classes;
 
 use Winter\Storm\Auth\AuthException;
 use RLuders\JWTAuth\Classes\AuthManager;
-use Tymon\JWTAuth\Contracts\Providers\Auth as AuthInterface;
+use PHPOpenSourceSaver\JWTAuth\Contracts\Providers\Auth as AuthInterface;
 
 /**
  * {@inheritDoc}

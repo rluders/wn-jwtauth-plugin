@@ -21,7 +21,7 @@ class JsonValidationException extends ValidationException implements HttpExcepti
         ];
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return ['errors' => $this->getErrors()];
     }
