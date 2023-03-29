@@ -3,9 +3,6 @@
 </p>
 
 <p align="center">
-  <a href="https://travis-ci.org/rluders/oc-jwtauth-plugin">
-    <img src="https://travis-ci.org/rluders/oc-jwtauth-plugin.svg?branch=main">
-  </a>
   <a href="https://wintercms.com/plugin/rluders-jwtauth">
     <img src="https://img.shields.io/badge/Winter%20CMS-Plugin-%23EE7203.svg">
   </a>
