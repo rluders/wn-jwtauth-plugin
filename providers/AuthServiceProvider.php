@@ -5,7 +5,7 @@ namespace RLuders\JWTAuth\Providers;
 use Config;
 use Response;
 use Winter\User\Models\User;
-use Tymon\JWTAuth\Providers\AbstractServiceProvider;
+use PHPOpenSourceSaver\JWTAuth\Providers\AbstractServiceProvider;
 use RLuders\JWTAuth\Models\Settings as PluginSettings;
 use RLuders\JWTAuth\Exceptions\JsonValidationException;
 

@@ -60,3 +60,6 @@
     - Updates dependencies
     - Fix language support
     - Adds French language support
+1.4.5:
+    - Updates dependencies - replaced tymon/jwt-auth with php-open-source-saver/jwt-auth
+    - Adds jwt-auth related refactoring

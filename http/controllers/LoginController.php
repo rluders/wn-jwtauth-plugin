@@ -6,7 +6,7 @@ use Event;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use RLuders\JWTAuth\Classes\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use RLuders\JWTAuth\Http\Requests\LoginRequest;
 
 class LoginController extends Controller
