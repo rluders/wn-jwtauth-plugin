@@ -6,6 +6,9 @@
   <a href="https://wintercms.com/plugin/rluders-jwtauth">
     <img src="https://img.shields.io/badge/Winter%20CMS-Plugin-%23EE7203.svg">
   </a>
+  <a href="https://github.com/rluders/wn-jwtauth-plugin/actions/workflows/test.yml">
+    <img src="https://github.com/rluders/wn-jwtauth-plugin/actions/workflows/test.yml/badge.svg">
+  </a>
   <a href="https://www.patreon.com/rluders">
     <img src="https://img.shields.io/badge/Support_on-Patreon-green.svg">
   </a>
@@ -20,7 +23,9 @@ This plugin provides a JSON Web Tokens authentication mechanism for [Winter CMS]
 
 ## Requirements
 
-- [Winter.User](https://github.com/wintercms/wn-user-plugin) plugin
+- PHP 8.0+
+- WinterCMS 1.2+ (Laravel 9) or 1.3+ (Laravel 10)
+- [Winter.User](https://github.com/wintercms/wn-user-plugin) plugin `^2.0`
 - [RLuders.CORS](https://wintercms.com/plugin/rluders-cors) plugin (optional, but recommended)
 
 ## Theme
@@ -315,6 +320,74 @@ Here's the list of available endpoints for this plugin.
   "error": user_not_found
 }
 ```
+
+## Logout
+
+`POST /api/auth/logout`
+
+**Middleware**
+
+`jwt.auth`
+
+**Route name**
+
+`api.auth.logout`
+
+Invalidates (blacklists) the current JWT. The token cannot be used again.
+
+### Responses
+
+**SUCCESS**
+
+> Code: 204 No Content
+
+**ERROR**
+
+> Code: 401 — Missing or invalid token
+
+---
+
+# Advanced
+
+## Custom JWT Claims
+
+Other plugins can add custom claims to the JWT by listening to the `rluders.jwtauth.customClaims` event.
+The listener receives `(&$claims, $user)` — modify the `$claims` array by reference.
+
+```php
+// In another plugin's boot() method
+Event::listen('rluders.jwtauth.customClaims', function (&$claims, $user) {
+    $claims['role'] = $user->role;
+    $claims['org']  = $user->organisation_id;
+});
+```
+
+## OpenAPI / Swagger Spec
+
+A machine-readable API spec is available at [openapi.yaml](openapi.yaml).
+Import it into Postman, Insomnia, Swagger UI, or any OpenAPI-compatible tooling.
+
+## Testing
+
+Requires [Podman](https://podman.io/) or Docker.
+
+```bash
+# Build test image and run the full test suite
+make test
+
+# Unit tests only
+make test-unit
+
+# Feature tests only
+make test-feature
+
+# Drop into the container shell for debugging
+make shell
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the commit convention and PR workflow.
+
+---
 
 # Known issues
 

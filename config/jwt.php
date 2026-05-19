@@ -11,6 +11,8 @@ return [
     |
     */
 
+    'show_black_list_exception' => true,
+
     'providers' => [
 
         /*

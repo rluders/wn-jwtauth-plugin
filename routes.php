@@ -43,6 +43,11 @@ Route::group(
                     'me',
                     'GetUserController'
                 )->name('api.auth.me');
+
+                Route::post(
+                    'logout',
+                    'LogoutController'
+                )->name('api.auth.logout');
             }
         );
     }

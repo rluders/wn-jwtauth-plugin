@@ -15,7 +15,7 @@ class RegisterRequest extends Request
 
         // Password confirmation is optional
         if (!array_key_exists('password_confirmation', $data)) {
-            $data['password_confirmation'] = $data['password'];
+            $data['password_confirmation'] = $data['password'] ?? null;
         }
 
         return $data;
