@@ -5,6 +5,7 @@ namespace RLuders\JWTAuth\Providers;
 use Config;
 use Response;
 use Winter\User\Models\User;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use PHPOpenSourceSaver\JWTAuth\Providers\AbstractServiceProvider;
 use RLuders\JWTAuth\Models\Settings as PluginSettings;
 use RLuders\JWTAuth\Exceptions\JsonValidationException;
@@ -16,12 +17,31 @@ class AuthServiceProvider extends AbstractServiceProvider
      */
     public function boot()
     {
-        // Register the error handler to the validation exception
-        $this->app->error(
-            function (JsonValidationException $exception) {
-                return $exception->toArray();
-            }
-        );
+        // JWT exceptions that bubble past the jwt.auth middleware (no token, expired,
+        // blacklisted) → 401. Controllers that need a different status (e.g.
+        // RefreshTokenController returning 403) must catch the exception themselves.
+        $this->app->make(ExceptionHandler::class)
+            ->renderable(function (\PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException $e, $request) {
+                if ($request->isJson()) {
+                    return response()->json(
+                        ['error' => $e->getMessage()],
+                        \Illuminate\Http\Response::HTTP_UNAUTHORIZED
+                    );
+                }
+                return null;
+            });
+
+        $this->app->make(ExceptionHandler::class)
+            ->renderable(function (JsonValidationException $exception, $request) {
+                if ($request->isJson()) {
+                    return response()->json(
+                        $exception->toArray(),
+                        $exception->getStatusCode(),
+                        $exception->getHeaders()
+                    );
+                }
+                return null;
+            });
 
         $this->bindRequests();
         $this->loadConfiguration();
@@ -95,9 +115,20 @@ class AuthServiceProvider extends AbstractServiceProvider
     {
         // Some of default values that doesn't need to be configured by
         // the user are included on this file
-        Config::set('jwt', Config::get('rluders.jwtauth::jwt'));
+        // Merge plugin providers into the jwt-auth package defaults instead of
+        // replacing them. Replacing wipes package defaults (blacklist_enabled, ttl,
+        // etc.) leaving only the providers section, which breaks tests and fresh installs.
+        Config::set('jwt', array_merge(
+            Config::get('jwt', []),
+            Config::get('rluders.jwtauth::jwt', [])
+        ));
 
-        $attributes = PluginSettings::instance()->attributes;
+        try {
+            $attributes = PluginSettings::instance()->attributes;
+        } catch (\Exception $e) {
+            $attributes = [];
+        }
+
         foreach ($attributes as $attr => $value) {
             $config = 'jwt.' . str_replace('keys_', 'keys.', $attr);
 

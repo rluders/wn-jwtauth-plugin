@@ -1,0 +1,72 @@
+FROM php:8.1-apache
+
+# Enable Apache modules required by WinterCMS
+RUN a2enmod rewrite headers
+
+# System deps + PHP extensions
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    sqlite3 \
+    libsqlite3-dev \
+    libzip-dev \
+    libpng-dev \
+    libxml2-dev \
+    libonig-dev \
+    unzip \
+    && docker-php-ext-install pdo pdo_sqlite mbstring xml zip gd \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy plugin source into staging
+COPY . /opt/plugin/
+
+WORKDIR /var/www/html
+
+# Remove default Apache page
+RUN rm -f index.html
+
+# Install WinterCMS runtime only (skip WinterCMS own dev deps to avoid phpunit^9 conflict)
+RUN composer create-project wintercms/winter . --prefer-dist --no-interaction --no-dev
+
+# Install plugin files
+RUN mkdir -p plugins/rluders/jwtauth \
+    && cp -r /opt/plugin/. plugins/rluders/jwtauth/
+
+# Install plugin runtime deps into WinterCMS vendor
+RUN composer require \
+    winter/wn-user-plugin:^2.0 \
+    php-open-source-saver/jwt-auth:^2.2 \
+    --no-interaction
+
+# Bootstrap .env and generate APP_KEY at build time
+RUN cp .env.example .env \
+    && php artisan key:generate \
+    && cp .env .env.build
+
+# Persist a writable SQLite database file
+RUN touch storage/database.sqlite \
+    && chown -R www-data:www-data storage/ bootstrap/cache/
+
+# Apache virtual host
+COPY .docker/apache.conf /etc/apache2/sites-available/000-default.conf
+
+# Startup script
+COPY .docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENV APP_ENV=local
+ENV APP_DEBUG=true
+ENV APP_URL=http://localhost:8080
+ENV DB_CONNECTION=sqlite
+ENV DB_DATABASE=/var/www/html/storage/database.sqlite
+ENV JWT_SECRET=dev-secret-key-for-local-testing-32ch
+ENV CACHE_DRIVER=file
+ENV QUEUE_CONNECTION=sync
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["apache2-foreground"]

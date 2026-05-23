@@ -2,6 +2,7 @@
 
 namespace RLuders\JWTAuth\Models;
 
+use Event;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Winter\User\Models\User as BaseUser;
 
@@ -20,10 +21,15 @@ class User extends BaseUser implements JWTSubject
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
+     * Fires 'rluders.jwtauth.customClaims' — listeners receive (&$claims, $user)
+     * and may add entries to the $claims array.
+     *
      * @return array
      */
-    public function getJWTCustomClaims()
+    public function getJWTCustomClaims(): array
     {
-        return [];
+        $claims = [];
+        Event::dispatch('rluders.jwtauth.customClaims', [&$claims, $this]);
+        return $claims;
     }
 }

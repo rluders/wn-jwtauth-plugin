@@ -40,12 +40,12 @@ class RegisterController extends Controller
 
         $data = $request->all();
 
-        Event::fire('Winter.User.beforeRegister', [&$data]);
+        Event::dispatch('Winter.User.beforeRegister', [&$data]);
 
         $activationMode = $this->getActivationMode();
         $user = $auth->register($data, ($activationMode == 'auto'));
 
-        Event::fire('Winter.User.register', [$user, $data]);
+        Event::dispatch('Winter.User.register', [$user, $data]);
 
         if ($activationMode == 'email') {
             $this->sendActivationEmail($user);

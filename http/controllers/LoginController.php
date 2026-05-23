@@ -25,7 +25,7 @@ class LoginController extends Controller
     ) {
         $credentials = $request->getCredentials();
 
-        Event::fire('Winter.User.beforeAuthenticate', [$this, $credentials]);
+        Event::dispatch('Winter.User.beforeAuthenticate', [$this, $credentials]);
 
         try {
             if (!$token = $auth->attempt($credentials)) {
@@ -59,7 +59,7 @@ class LoginController extends Controller
             );
         }
 
-        Event::fire('Winter.User.login', $user);
+        Event::dispatch('Winter.User.login', $user);
         return response()->json(compact('token', 'user'));
     }
 }

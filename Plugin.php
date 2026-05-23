@@ -4,6 +4,7 @@ namespace RLuders\JWTAuth;
 
 use App, Config;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use System\Classes\PluginBase;
 use System\Classes\SettingsManager;
 use RLuders\JWTAuth\Models\Settings as PluginSettings;
@@ -77,23 +78,34 @@ class Plugin extends PluginBase
      */
     public function register()
     {
+        // MUST be registered before App::register(AuthServiceProvider) so that when the
+        // app is already booted (e.g. during tests), AuthServiceProvider::boot() adds its
+        // more-specific handlers AFTER this one. Laravel checks renderable handlers in LIFO
+        // order, so the last-registered handler is checked first — meaning
+        // AuthServiceProvider's JsonValidationException handler will take priority here.
+        $this->app->make(ExceptionHandler::class)
+            ->renderable(function (\Exception $e, $request) {
+                if (!$request->isJson()) {
+                    return null;
+                }
+                // HTTP exceptions (401, 403, 404, 422 …) and Laravel auth exceptions
+                // carry their own status codes — let the framework render them.
+                if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface
+                    || $e instanceof \Illuminate\Auth\AuthenticationException) {
+                    return null;
+                }
+
+                return response()->json([
+                    'error' => [
+                        'code'     => 'internal_error',
+                        'http_code' => 500,
+                        'message'  => $e->getMessage(),
+                    ],
+                ], 500);
+            });
+
         App::register('\RLuders\JWTAuth\Providers\AuthServiceProvider');
         $alias = AliasLoader::getInstance();
         $alias->alias('JWTAuth', '\RLuders\JWTAuth\Facades\JWTAuth');
-
-        // Handle error
-        $this->app->error(function (\Exception $e) {
-            if (!request()->isJson()) {
-                return;
-            }
-
-            return [
-                'error' => [
-                    'code' => 'internal_error',
-                    'http_code' => 500,
-                    'message' => $e->getMessage(),
-                ],
-            ];
-        });
     }
 }

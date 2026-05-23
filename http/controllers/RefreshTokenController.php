@@ -6,7 +6,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use RLuders\JWTAuth\Classes\JWTAuth;
 use RLuders\JWTAuth\Http\Requests\TokenRequest;
-use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenBlacklistedException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 class RefreshTokenController extends Controller
 {
@@ -32,9 +32,9 @@ class RefreshTokenController extends Controller
                     Response::HTTP_FORBIDDEN
                 );
             }
-        } catch (TokenBlacklistedException $e) {
+        } catch (JWTException $e) {
             return response()->json(
-                ['error' => 'given_token_was_blacklisted'],
+                ['error' => $e->getMessage()],
                 Response::HTTP_FORBIDDEN
             );
         }
