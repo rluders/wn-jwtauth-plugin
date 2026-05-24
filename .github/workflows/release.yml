@@ -9,9 +9,79 @@ permissions:
   pull-requests: write
 
 jobs:
+  test:
+    name: PHP ${{ matrix.php }} / WinterCMS ${{ matrix.winter }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: "8.1"
+            winter: "latest"
+          - php: "8.2"
+            winter: "latest"
+
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+        with:
+          path: plugin
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo, pdo_sqlite, sqlite3, gd, mbstring, xml, zip
+          coverage: none
+
+      - name: Install WinterCMS
+        run: |
+          composer create-project wintercms/winter wintercms \
+            --prefer-dist \
+            --no-interaction \
+            --no-dev
+
+      - name: Copy plugin into WinterCMS
+        run: |
+          mkdir -p wintercms/plugins/rluders/jwtauth
+          cp -r plugin/. wintercms/plugins/rluders/jwtauth/
+
+      - name: Install plugin runtime dependencies
+        working-directory: wintercms
+        run: |
+          composer require \
+            winter/wn-user-plugin:^2.0 \
+            php-open-source-saver/jwt-auth:^2.2 \
+            --no-interaction
+
+      - name: Install plugin dev dependencies
+        working-directory: wintercms
+        run: |
+          composer require --dev \
+            mockery/mockery:^1.6 \
+            --no-interaction
+
+      - name: Register plugin namespace for autoloading
+        working-directory: wintercms
+        run: |
+          php plugins/rluders/jwtauth/.docker/register-plugin-autoload.php
+          composer dump-autoload
+
+      - name: Run tests
+        working-directory: wintercms
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
+          JWT_SECRET: test-secret-key-for-testing-only-32chars
+          CACHE_DRIVER: array
+          QUEUE_CONNECTION: sync
+        run: php artisan winter:test -p RLuders.JWTAuth
+
   release-please:
     name: Release Please
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - uses: google-github-actions/release-please-action@v4
@@ -20,7 +90,6 @@ jobs:
           release-type: simple
           package-name: wn-jwtauth-plugin
 
-      # Notify Packagist to re-crawl after a release is published
       - name: Notify Packagist
         if: ${{ steps.release.outputs.release_created }}
         run: |
