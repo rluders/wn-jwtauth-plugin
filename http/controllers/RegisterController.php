@@ -50,6 +50,14 @@ class RegisterController extends Controller
 
         if ($activationMode == 'email') {
             $this->sendActivationEmail($user);
+            return response()->json([], Response::HTTP_CREATED);
+        }
+
+        if ($activationMode == 'auto') {
+            $token = $auth->fromUser($user);
+            $userData = $user->toArray();
+            Event::dispatch('rluders.jwtauth.userTransform', [&$userData, $user]);
+            return response()->json(['token' => $token, 'user' => $userData]);
         }
 
         return response()->json([], Response::HTTP_CREATED);

@@ -3,6 +3,7 @@
 namespace RLuders\JWTAuth\Tests\Feature;
 
 use Illuminate\Support\Facades\RateLimiter;
+use Winter\User\Models\Settings as WinterUserSettings;
 use RLuders\JWTAuth\Tests\TestCase;
 
 class RateLimitTest extends TestCase
@@ -43,6 +44,8 @@ class RateLimitTest extends TestCase
 
     public function testRegisterReturns429AfterExceedingMaxAttempts(): void
     {
+        WinterUserSettings::set('activate_mode', WinterUserSettings::ACTIVATE_ADMIN);
+
         for ($i = 0; $i < 3; $i++) {
             $this->postJson('/api/auth/register', [
                 'name'                  => "User {$i}",
