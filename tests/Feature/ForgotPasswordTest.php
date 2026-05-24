@@ -2,6 +2,7 @@
 
 namespace RLuders\JWTAuth\Tests\Feature;
 
+use Config;
 use Winter\Storm\Support\Facades\Mail;
 use RLuders\JWTAuth\Tests\TestCase;
 
@@ -40,5 +41,18 @@ class ForgotPasswordTest extends TestCase
 
         $this->postJson('/api/auth/forgot-password', ['email' => 'inactive@example.com'])
             ->assertStatus(404);
+    }
+
+    public function testResetPasswordUrlConfigOverrideIsRespected(): void
+    {
+        $this->createUser(['email' => 'resetconfig@example.com']);
+        Config::set('rluders.jwtauth::config.reset_password_url', 'https://custom.example.com/reset/{code}');
+
+        $this->postJson('/api/auth/forgot-password', ['email' => 'resetconfig@example.com'])
+            ->assertStatus(200);
+
+        Mail::assertSent('winter.user::mail.restore', function ($mailable) {
+            return str_starts_with($mailable->viewData['link'] ?? '', 'https://custom.example.com/reset/');
+        });
     }
 }

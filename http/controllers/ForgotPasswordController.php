@@ -2,6 +2,7 @@
 
 namespace RLuders\JWTAuth\Http\Controllers;
 
+use Config;
 use Illuminate\Http\Response;
 use RLuders\JWTAuth\Models\User;
 use RLuders\JWTAuth\Models\Settings;
@@ -78,7 +79,7 @@ class ForgotPasswordController extends Controller
      */
     protected function makeResetPasswordUrl(string $code): string
     {
-        $url = Settings::get('reset_password_url');
+        $url = Config::get('rluders.jwtauth::config.reset_password_url') ?? Settings::get('reset_password_url');
         return $this->makeUrl($url, $code);
     }
 }

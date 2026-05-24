@@ -2,6 +2,7 @@
 
 namespace RLuders\JWTAuth\Http\Controllers;
 
+use Config;
 use Illuminate\Http\Response;
 use RLuders\JWTAuth\Models\User;
 use Illuminate\Routing\Controller;
@@ -115,7 +116,7 @@ class RegisterController extends Controller
      */
     protected function makeActivationUrl(string $code): string
     {
-        $url = Settings::get('activation_url');
+        $url = Config::get('rluders.jwtauth::config.activation_url') ?? Settings::get('activation_url');
         return $this->makeUrl($url, $code);
     }
 }
