@@ -5,43 +5,45 @@ namespace RLuders\JWTAuth\Http\Controllers;
 use Illuminate\Http\Response;
 use RLuders\JWTAuth\Models\User;
 use Illuminate\Routing\Controller;
+use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Http\Requests\ResetPasswordRequest;
+use RLuders\JWTAuth\Http\Responses\ErrorResponse;
 
 class ResetPasswordController extends Controller
 {
     /**
-     * Reset the user password
+     * Reset a user's password using a password reset code.
      *
-     * @param ResetPasswordRequest $request
-     *
-     * @return Illuminate\Http\Response
+     * @param  \RLuders\JWTAuth\Http\Requests\ResetPasswordRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke(ResetPasswordRequest $request)
     {
         $code = $request->get('reset_password_code');
         $parts = explode('!', $code);
 
-        // @TODO Can I convert it as validator?
         if (count($parts) != 2) {
-            return response()->json(
-                ['error' => 'invalid_reset_password_code'],
+            return ErrorResponse::json(
+                ErrorCodes::INVALID_RESET_PASSWORD_CODE,
+                'The password reset code format is invalid.',
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
-        list($userId, $code) = $parts;
+        [$userId, $resetCode] = $parts;
 
-        // @TODO Can I convert it as validator?
         if (!strlen(trim($userId)) || !($user = User::find($userId))) {
-            return response()->json(
-                ['error' => 'invalid_user'],
+            return ErrorResponse::json(
+                ErrorCodes::INVALID_USER,
+                'The password reset code contains invalid user information.',
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
-        if (!$user->attemptResetPassword($code, $request->get('password'))) {
-            return response()->json(
-                ['error' => 'invalid_reset_password_code'],
+        if (!$user->attemptResetPassword($resetCode, $request->get('password'))) {
+            return ErrorResponse::json(
+                ErrorCodes::INVALID_RESET_PASSWORD_CODE,
+                'The password reset code is invalid or has expired.',
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }

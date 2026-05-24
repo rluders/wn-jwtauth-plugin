@@ -50,5 +50,7 @@ class Settings extends Model
         $this->encrypt_cookies = false;
         $this->activation_url = '/#/auth/activation/{code}';
         $this->reset_password_url = '/#/auth/reset-password/{code}';
+        $this->throttle_max_attempts = 5;
+        $this->throttle_decay_minutes = 1;
     }
 }

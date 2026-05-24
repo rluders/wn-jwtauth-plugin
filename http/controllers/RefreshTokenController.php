@@ -2,44 +2,52 @@
 
 namespace RLuders\JWTAuth\Http\Controllers;
 
+use Event;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Classes\JWTAuth;
 use RLuders\JWTAuth\Http\Requests\TokenRequest;
-use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenBlacklistedException;
+use RLuders\JWTAuth\Http\Responses\ErrorResponse;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 class RefreshTokenController extends Controller
 {
     /**
-     * Refresh the user token
+     * Refresh a JWT token and return the new token.
      *
-     * @param JWTAuth      $auth
-     * @param TokenRequest $request
+     * The old token is invalidated (blacklisted) and a fresh one is issued.
+     * Fires `RLuders.JWTAuth.tokenRefreshed` with the authenticated user on success.
      *
-     * @return Illuminate\Http\Response
+     * @param  \RLuders\JWTAuth\Classes\JWTAuth             $auth
+     * @param  \RLuders\JWTAuth\Http\Requests\TokenRequest  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke(
         JWTAuth $auth,
         TokenRequest $request
     ) {
-        $token = $request->get('token');
-        $auth->setToken($token);
+        $oldToken = $request->get('token');
+        $auth->setToken($oldToken);
 
         try {
-            if (!$token = $auth->refresh($token)) {
-                return response()->json(
-                    ['error' => 'could_not_refresh_token'],
+            if (!$token = $auth->refresh($oldToken)) {
+                return ErrorResponse::json(
+                    ErrorCodes::COULD_NOT_REFRESH_TOKEN,
+                    'The token could not be refreshed.',
                     Response::HTTP_FORBIDDEN
                 );
             }
-        } catch (TokenBlacklistedException $e) {
-            return response()->json(
-                ['error' => 'given_token_was_blacklisted'],
+        } catch (JWTException $e) {
+            return ErrorResponse::json(
+                ErrorCodes::COULD_NOT_REFRESH_TOKEN,
+                $e->getMessage(),
                 Response::HTTP_FORBIDDEN
             );
         }
 
-        $auth->setToken($token);
+        $user = $auth->setToken($token)->authenticate();
+        Event::dispatch('RLuders.JWTAuth.tokenRefreshed', [$user]);
 
         return response()->json(compact('token'));
     }

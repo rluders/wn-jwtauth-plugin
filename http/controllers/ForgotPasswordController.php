@@ -2,13 +2,14 @@
 
 namespace RLuders\JWTAuth\Http\Controllers;
 
-use Mail;
 use Illuminate\Http\Response;
 use RLuders\JWTAuth\Models\User;
 use RLuders\JWTAuth\Models\Settings;
 use Illuminate\Routing\Controller;
+use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Http\Requests\ForgotPasswordRequest;
 use RLuders\JWTAuth\Http\Controllers\Traits\CanMakeUrl;
+use RLuders\JWTAuth\Http\Responses\ErrorResponse;
 use RLuders\JWTAuth\Http\Controllers\Traits\CanSendMail;
 
 class ForgotPasswordController extends Controller
@@ -17,11 +18,13 @@ class ForgotPasswordController extends Controller
         CanSendMail;
 
     /**
-     * Send the forgot password request
+     * Send a password reset email to the given address.
      *
-     * @param ForgotPasswordRequest $request
+     * Banned and inactive users are treated as not found to avoid account
+     * enumeration through differing error responses.
      *
-     * @return Illuminate\Http\Response
+     * @param  \RLuders\JWTAuth\Http\Requests\ForgotPasswordRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke(
         ForgotPasswordRequest $request
@@ -30,8 +33,9 @@ class ForgotPasswordController extends Controller
 
         $user = User::findByEmail($email);
         if (!$user || $user->isBanned() || !$user->is_activated) {
-            return response()->json(
-                ['error' => 'user_not_found'],
+            return ErrorResponse::json(
+                ErrorCodes::USER_NOT_FOUND,
+                'No active account was found for the given email address.',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -42,12 +46,12 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Sends the forgot password email to a user
+     * Send the password reset email to a user.
      *
-     * @param User $user
+     * @param  \RLuders\JWTAuth\Models\User $user
      * @return void
      */
-    protected function sendResetPasswordEmail(User $user)
+    protected function sendResetPasswordEmail(User $user): void
     {
         $code = implode('!', [$user->id, $user->getResetPasswordCode()]);
         $link = $this->makeResetPasswordUrl($code);
@@ -67,12 +71,12 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Create the password reset URL
+     * Build the password reset URL containing the reset code.
      *
-     * @param string $code
+     * @param  string $code Compound reset code in the format `{userId}!{code}`.
      * @return string
      */
-    protected function makeResetPasswordUrl($code)
+    protected function makeResetPasswordUrl(string $code): string
     {
         $url = Settings::get('reset_password_url');
         return $this->makeUrl($url, $code);

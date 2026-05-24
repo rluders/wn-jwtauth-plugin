@@ -63,3 +63,16 @@
 1.5.0:
     - Updates dependencies - replaced tymon/jwt-auth with php-open-source-saver/jwt-auth
     - Adds jwt-auth related refactoring
+2.0.0:
+    - "BREAKING: error responses now use structured format {\"error\":{\"code\":\"...\",\"message\":\"...\"}} across all endpoints"
+    - "BREAKING: POST /account-activation now returns {\"token\",\"user\"} instead of empty body (auto-login after activation)"
+    - Requires PHP 8.1+ and WinterCMS 1.2+ (Laravel 9+)
+    - Rate limiting on login, register, and forgot-password endpoints (configurable via backend settings)
+    - Canonical error code constants (ErrorCodes class) — no more magic strings
+    - Unified error response helper (ErrorResponse class)
+    - JWT exceptions mapped to typed error codes: token_expired, token_blacklisted, token_invalid
+    - jwt.auth.optional middleware registered (soft authentication via Check middleware)
+    - Events: RLuders.JWTAuth.tokenRefreshed on token refresh, Winter.User.logout on logout
+    - Rate limit settings exposed in backend: max attempts and decay window (minutes)
+    - Improved PHPDoc across all classes with accurate return types
+    - Updated OpenAPI spec with structured error schemas and 429 responses

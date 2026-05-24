@@ -125,7 +125,21 @@ tabs:
             comment: rluders.jwtauth::lang.settings.fields.blacklist_grace_period.comment
             type: number
             tab: rluders.jwtauth::lang.settings.tabs.extras
-    
+
+        throttle_max_attempts:
+            span: left
+            label: rluders.jwtauth::lang.settings.fields.throttle_max_attempts.label
+            comment: rluders.jwtauth::lang.settings.fields.throttle_max_attempts.comment
+            type: number
+            tab: rluders.jwtauth::lang.settings.tabs.extras
+
+        throttle_decay_minutes:
+            span: right
+            label: rluders.jwtauth::lang.settings.fields.throttle_decay_minutes.label
+            comment: rluders.jwtauth::lang.settings.fields.throttle_decay_minutes.comment
+            type: number
+            tab: rluders.jwtauth::lang.settings.tabs.extras
+
         # URLs
 
         help_urls:

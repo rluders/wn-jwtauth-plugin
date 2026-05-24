@@ -5,19 +5,20 @@ namespace RLuders\JWTAuth\Http\Controllers;
 use Event;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Classes\JWTAuth;
-use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use RLuders\JWTAuth\Http\Requests\LoginRequest;
+use RLuders\JWTAuth\Http\Responses\ErrorResponse;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 class LoginController extends Controller
 {
     /**
-     * Login the user
+     * Authenticate a user and return a JWT token.
      *
-     * @param JWTAuth      $auth
-     * @param LoginRequest $request
-     *
-     * @return Illuminate\Http\Response
+     * @param  \RLuders\JWTAuth\Classes\JWTAuth            $auth
+     * @param  \RLuders\JWTAuth\Http\Requests\LoginRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke(
         JWTAuth $auth,
@@ -25,18 +26,20 @@ class LoginController extends Controller
     ) {
         $credentials = $request->getCredentials();
 
-        Event::fire('Winter.User.beforeAuthenticate', [$this, $credentials]);
+        Event::dispatch('Winter.User.beforeAuthenticate', [$this, $credentials]);
 
         try {
             if (!$token = $auth->attempt($credentials)) {
-                return response()->json(
-                    ['error' => 'invalid_credentials'],
+                return ErrorResponse::json(
+                    ErrorCodes::INVALID_CREDENTIALS,
+                    'The provided credentials are incorrect.',
                     Response::HTTP_UNAUTHORIZED
                 );
             }
         } catch (JWTException $e) {
-            return response()->json(
-                ['error' => 'could_not_create_token'],
+            return ErrorResponse::json(
+                ErrorCodes::COULD_NOT_CREATE_TOKEN,
+                'Could not create authentication token.',
                 Response::HTTP_UNAUTHORIZED
             );
         }
@@ -45,21 +48,24 @@ class LoginController extends Controller
 
         if ($user->isBanned()) {
             $auth->invalidate();
-            return response()->json(
-                ['error' => 'user_is_banned'],
+            return ErrorResponse::json(
+                ErrorCodes::USER_IS_BANNED,
+                'This account has been banned.',
                 Response::HTTP_UNAUTHORIZED
             );
         }
 
         if (!$user->is_activated) {
             $auth->invalidate();
-            return response()->json(
-                ['error' => 'user_inactive'],
+            return ErrorResponse::json(
+                ErrorCodes::USER_INACTIVE,
+                'This account has not been activated.',
                 Response::HTTP_UNAUTHORIZED
             );
         }
 
-        Event::fire('Winter.User.login', $user);
+        Event::dispatch('Winter.User.login', $user);
+
         return response()->json(compact('token', 'user'));
     }
 }

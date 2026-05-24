@@ -1,0 +1,424 @@
+openapi: "3.0.3"
+info:
+  title: WinterCMS JWT Auth Plugin API
+  description: JWT-based authentication API for WinterCMS via the rluders/wn-jwtauth-plugin.
+  version: "2.0.0"
+  license:
+    name: GPL-3.0-or-later
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+
+servers:
+  - url: /api/auth
+    description: Plugin API prefix
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+
+    UserResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        username:
+          type: string
+          example: "johndoe"
+        is_activated:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+
+    Error:
+      description: >
+        Structured error payload returned by all error responses.
+        Use `error.code` to branch on specific error conditions.
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error identifier.
+              example: "invalid_credentials"
+            message:
+              type: string
+              description: Human-readable description of the error.
+              example: "The provided credentials are incorrect."
+
+    ValidationError:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email: ["The email field is required."]
+
+paths:
+  /login:
+    post:
+      summary: Authenticate user and return JWT token
+      operationId: login
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [login, password]
+              properties:
+                login:
+                  type: string
+                  description: Email address or username (depends on Winter.User settings)
+                  example: "john@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "secret"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: Invalid credentials, banned user, or inactive account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalid_credentials:
+                  value:
+                    error: {code: "invalid_credentials", message: "The provided credentials are incorrect."}
+                user_banned:
+                  value:
+                    error: {code: "user_is_banned", message: "This account has been banned."}
+                user_inactive:
+                  value:
+                    error: {code: "user_inactive", message: "This account has not been activated."}
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        "429":
+          description: Too many login attempts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "too_many_requests", message: "Too many attempts. Please try again later."}
+
+  /register:
+    post:
+      summary: Register a new user account
+      operationId: register
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "john@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "secret"
+                username:
+                  type: string
+                  example: "johndoe"
+      responses:
+        "201":
+          description: Registration successful
+        "401":
+          description: Registration is disabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "registration_disabled", message: "User registration is currently disabled."}
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        "429":
+          description: Too many registration attempts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "too_many_requests", message: "Too many attempts. Please try again later."}
+
+  /account-activation:
+    post:
+      summary: Activate a user account and receive a JWT token for immediate login
+      operationId: activateAccount
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [activation_code]
+              properties:
+                activation_code:
+                  type: string
+                  description: "Activation code in format {userId}!{code} received via email"
+                  example: "1!abc123def456"
+      responses:
+        "200":
+          description: Account activated successfully — token and user returned for immediate login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "422":
+          description: Invalid or expired activation code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalid_code:
+                  value:
+                    error: {code: "invalid_activation_code", message: "The activation code is invalid or has already been used."}
+                user_not_found:
+                  value:
+                    error: {code: "user_not_found", message: "No user was found for the given activation code."}
+
+  /forgot-password:
+    post:
+      summary: Request a password reset email
+      operationId: forgotPassword
+      tags: [Password Reset]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "john@example.com"
+      responses:
+        "200":
+          description: Password reset email sent
+        "404":
+          description: User not found, inactive, or banned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "user_not_found", message: "No active account was found for the given email address."}
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        "429":
+          description: Too many password reset attempts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "too_many_requests", message: "Too many attempts. Please try again later."}
+
+  /reset-password:
+    post:
+      summary: Reset password using the code received via email
+      operationId: resetPassword
+      tags: [Password Reset]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reset_password_code, password]
+              properties:
+                reset_password_code:
+                  type: string
+                  description: "Reset code in format {userId}!{code} received via email"
+                  example: "1!xyz789abc"
+                password:
+                  type: string
+                  format: password
+                  example: "newSecret123"
+                password_confirmation:
+                  type: string
+                  format: password
+                  example: "newSecret123"
+      responses:
+        "200":
+          description: Password reset successful
+        "422":
+          description: Invalid or expired reset code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalid_code:
+                  value:
+                    error: {code: "invalid_reset_password_code", message: "The password reset code is invalid or has expired."}
+                invalid_user:
+                  value:
+                    error: {code: "invalid_user", message: "The password reset code contains invalid user information."}
+
+  /refresh-token:
+    post:
+      summary: Refresh a JWT token
+      operationId: refreshToken
+      tags: [Token]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+                  example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+      responses:
+        "200":
+          description: New token issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "403":
+          description: Token is blacklisted or cannot be refreshed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "could_not_refresh_token", message: "The token could not be refreshed."}
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /me:
+    get:
+      summary: Get the currently authenticated user
+      operationId: getUser
+      tags: [Token]
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Authenticated user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                token_expired:
+                  value:
+                    error: {code: "token_expired", message: "The token has expired."}
+                token_invalid:
+                  value:
+                    error: {code: "token_invalid", message: "The token is invalid."}
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "user_not_found", message: "The authenticated user could not be found."}
+
+  /logout:
+    post:
+      summary: Invalidate the current JWT token (logout)
+      operationId: logout
+      tags: [Token]
+      security:
+        - BearerAuth: []
+      responses:
+        "204":
+          description: Logged out successfully
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Could not invalidate token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "could_not_invalidate_token", message: "The token could not be invalidated."}

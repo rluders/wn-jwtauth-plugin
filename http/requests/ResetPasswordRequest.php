@@ -15,7 +15,7 @@ class ResetPasswordRequest extends Request
 
         // Password confirmation is optional
         if (!array_key_exists('password_confirmation', $data)) {
-            $data['password_confirmation'] = $data['password'];
+            $data['password_confirmation'] = $data['password'] ?? null;
         }
 
         return $data;
@@ -30,7 +30,7 @@ class ResetPasswordRequest extends Request
     {
         return [
             'reset_password_code' => 'required',
-            'password' => 'required|between:4,255:confirm'
+            'password' => 'required|between:4,255|confirmed'
             // @TODO Request Password Token Validation
         ];
     }

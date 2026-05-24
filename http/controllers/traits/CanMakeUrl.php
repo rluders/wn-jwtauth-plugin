@@ -12,9 +12,9 @@ trait CanMakeUrl
      *
      * @return string
      */
-    protected function makeUrl($url, $code)
+    protected function makeUrl(?string $url, string $code): string
     {
-        $url = str_replace('{code}', $code, $url);
+        $url = str_replace('{code}', $code, $url ?? '');
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             $url = url($url);
