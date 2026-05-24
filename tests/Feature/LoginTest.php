@@ -2,6 +2,7 @@
 
 namespace RLuders\JWTAuth\Tests\Feature;
 
+use Event;
 use RLuders\JWTAuth\Tests\TestCase;
 use RLuders\JWTAuth\Models\User;
 
@@ -68,5 +69,19 @@ class LoginTest extends TestCase
         $this->postJson('/api/auth/login', ['login' => 'login@example.com'])
             ->assertStatus(422)
             ->assertJsonStructure(['errors']);
+    }
+
+    public function testUserTransformEventAllowsExtendingUserData(): void
+    {
+        Event::listen('rluders.jwtauth.userTransform', function (&$userData, $user) {
+            $userData['custom_field'] = 'injected';
+        });
+
+        $this->postJson('/api/auth/login', [
+            'login'    => 'login@example.com',
+            'password' => 'Password1!',
+        ])
+        ->assertStatus(200)
+        ->assertJson(['user' => ['custom_field' => 'injected']]);
     }
 }
