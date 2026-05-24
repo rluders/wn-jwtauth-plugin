@@ -2,6 +2,7 @@
 
 namespace RLuders\JWTAuth\Tests\Feature;
 
+use Event;
 use RLuders\JWTAuth\Tests\TestCase;
 
 class GetUserTest extends TestCase
@@ -26,5 +27,19 @@ class GetUserTest extends TestCase
     {
         $this->getJson('/api/auth/me', ['Authorization' => 'Bearer bad.token.here'])
             ->assertStatus(401);
+    }
+
+    public function testUserTransformEventAllowsExtendingUserData(): void
+    {
+        Event::listen('rluders.jwtauth.userTransform', function (&$userData, $user) {
+            $userData['custom_field'] = 'injected';
+        });
+
+        $user  = $this->createUser(['email' => 'me2@example.com']);
+        $token = $this->tokenFor($user);
+
+        $this->getJson('/api/auth/me', ['Authorization' => "Bearer {$token}"])
+            ->assertStatus(200)
+            ->assertJson(['user' => ['custom_field' => 'injected']]);
     }
 }

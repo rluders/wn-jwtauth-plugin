@@ -2,6 +2,7 @@
 
 namespace RLuders\JWTAuth\Http\Controllers;
 
+use Event;
 use Illuminate\Http\Response;
 use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Classes\JWTAuth;
@@ -26,6 +27,9 @@ class GetUserController extends Controller
             );
         }
 
-        return response()->json(compact('user'));
+        $userData = $user->toArray();
+        Event::dispatch('rluders.jwtauth.userTransform', [&$userData, $user]);
+
+        return response()->json(['user' => $userData]);
     }
 }

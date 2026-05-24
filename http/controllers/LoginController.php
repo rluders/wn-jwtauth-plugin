@@ -66,6 +66,9 @@ class LoginController extends Controller
 
         Event::dispatch('Winter.User.login', $user);
 
-        return response()->json(compact('token', 'user'));
+        $userData = $user->toArray();
+        Event::dispatch('rluders.jwtauth.userTransform', [&$userData, $user]);
+
+        return response()->json(['token' => $token, 'user' => $userData]);
     }
 }
