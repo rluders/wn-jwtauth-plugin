@@ -12,7 +12,8 @@ class ActivateTest extends TestCase
         $code = implode('!', [$user->id, $user->getActivationCode()]);
 
         $this->postJson('/api/auth/account-activation', ['activation_code' => $code])
-            ->assertStatus(200);
+            ->assertStatus(200)
+            ->assertJsonStructure(['token', 'user']);
     }
 
     public function testReturns422ForAnInvalidActivationCode(): void

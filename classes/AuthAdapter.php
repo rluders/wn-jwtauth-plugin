@@ -3,21 +3,24 @@
 namespace RLuders\JWTAuth\Classes;
 
 use Winter\Storm\Auth\AuthException;
-use RLuders\JWTAuth\Classes\AuthManager;
 use PHPOpenSourceSaver\JWTAuth\Contracts\Providers\Auth as AuthInterface;
 
 /**
- * {@inheritDoc}
+ * Bridges the JWT library's auth contract to WinterCMS's AuthManager.
+ *
+ * The JWT library calls these methods to authenticate users and retrieve them
+ * by ID. All results are delegated to the singleton AuthManager so Winter's
+ * session/guard state stays in sync.
  */
 class AuthAdapter implements AuthInterface
 {
     /**
-     * @var RLuders\JWTAuth\Classes\AuthManager
+     * @var \RLuders\JWTAuth\Classes\AuthManager
      */
     protected $auth;
 
     /**
-     * Construct the adapter
+     * Resolve the AuthManager singleton on construction.
      */
     public function __construct()
     {
@@ -25,11 +28,10 @@ class AuthAdapter implements AuthInterface
     }
 
     /**
-     * Get user by credentials
+     * Authenticate a user by credentials and set them as the active user.
      *
-     * @param array $credentials User credentials (username/email and password)
-     *
-     * @return bool|RLuders\JWTAuth\Models\User
+     * @param  array $credentials Associative array with login and password keys.
+     * @return \RLuders\JWTAuth\Models\User|false User on success, false on failure.
      */
     public function byCredentials(array $credentials = [])
     {
@@ -44,15 +46,16 @@ class AuthAdapter implements AuthInterface
     }
 
     /**
-     * Authenticate a user via the id.
+     * Authenticate a user by their primary key and set them as the active user.
      *
-     * @param mixed $id The user ID
-     *
-     * @return bool
+     * @param  mixed $id User primary key.
+     * @return \RLuders\JWTAuth\Models\User|null User on success, null when not found.
      */
     public function byId($id)
     {
-        if (!is_null($user = $this->auth->findUserById($id))) {
+        $user = $this->auth->findUserById($id);
+
+        if (!is_null($user)) {
             $this->auth->setUser($user);
         }
 
@@ -60,9 +63,9 @@ class AuthAdapter implements AuthInterface
     }
 
     /**
-     * Get the currently authenticated user.
+     * Return the currently authenticated user, or null if none.
      *
-     * @return RLuders\JWTAuth\Models\User
+     * @return \RLuders\JWTAuth\Models\User|null
      */
     public function user()
     {
@@ -70,11 +73,11 @@ class AuthAdapter implements AuthInterface
     }
 
     /**
-     * Register user
+     * Register a new user account.
      *
-     * @param array $data
-     * @param boolean $activate
-     * @return Winter\Storm\Database\Model
+     * @param  array $data     Registration data (name, email, password, …).
+     * @param  bool  $activate Whether to activate the account immediately.
+     * @return \RLuders\JWTAuth\Models\User
      */
     public function register($data, $activate = false)
     {

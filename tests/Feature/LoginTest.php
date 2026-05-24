@@ -32,7 +32,7 @@ class LoginTest extends TestCase
             'password' => 'wrong',
         ])
         ->assertStatus(401)
-        ->assertJson(['error' => 'invalid_credentials']);
+        ->assertJson(['error' => ['code' => 'invalid_credentials']]);
     }
 
     public function testReturns401ForUnknownUser(): void
@@ -53,7 +53,7 @@ class LoginTest extends TestCase
             'password' => 'Password1!',
         ])
         ->assertStatus(401)
-        ->assertJson(['error' => 'user_inactive']);
+        ->assertJson(['error' => ['code' => 'user_inactive']]);
     }
 
     public function testReturns422WhenLoginFieldIsMissing(): void

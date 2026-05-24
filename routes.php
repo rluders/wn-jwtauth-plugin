@@ -7,25 +7,27 @@ Route::group(
         'middleware' => ['api'],
     ],
     function () {
-        Route::post(
-            'login',
-            'LoginController'
-        )->name('api.auth.login');
+        Route::middleware(['throttle:jwtauth'])->group(function () {
+            Route::post(
+                'login',
+                'LoginController'
+            )->name('api.auth.login');
 
-        Route::post(
-            'register',
-            'RegisterController'
-        )->name('api.auth.register');
+            Route::post(
+                'register',
+                'RegisterController'
+            )->name('api.auth.register');
+
+            Route::post(
+                'forgot-password',
+                'ForgotPasswordController'
+            )->name('api.auth.forgot-password');
+        });
 
         Route::post(
             'account-activation',
             'ActivateController'
         )->name('api.auth.account-activation');
-
-        Route::post(
-            'forgot-password',
-            'ForgotPasswordController'
-        )->name('api.auth.forgot-password');
 
         Route::post(
             'reset-password',

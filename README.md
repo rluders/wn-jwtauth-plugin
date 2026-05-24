@@ -23,7 +23,7 @@ This plugin provides a JSON Web Tokens authentication mechanism for [Winter CMS]
 
 ## Requirements
 
-- PHP 8.0+
+- PHP 8.1+
 - WinterCMS 1.2+ (Laravel 9) or 1.3+ (Laravel 10)
 - [Winter.User](https://github.com/wintercms/wn-user-plugin) plugin `^2.0`
 - [RLuders.CORS](https://wintercms.com/plugin/rluders-cors) plugin (optional, but recommended)

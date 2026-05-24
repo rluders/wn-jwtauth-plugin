@@ -59,11 +59,22 @@ components:
           format: date-time
 
     Error:
+      description: >
+        Structured error payload returned by all error responses.
+        Use `error.code` to branch on specific error conditions.
       type: object
       properties:
         error:
-          type: string
-          example: "invalid_credentials"
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error identifier.
+              example: "invalid_credentials"
+            message:
+              type: string
+              description: Human-readable description of the error.
+              example: "The provided credentials are incorrect."
 
     ValidationError:
       type: object
@@ -76,21 +87,6 @@ components:
               type: string
           example:
             email: ["The email field is required."]
-
-    InternalError:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              example: "internal_error"
-            http_code:
-              type: integer
-              example: 500
-            message:
-              type: string
 
 paths:
   /login:
@@ -129,17 +125,28 @@ paths:
                 $ref: "#/components/schemas/Error"
               examples:
                 invalid_credentials:
-                  value: {error: "invalid_credentials"}
+                  value:
+                    error: {code: "invalid_credentials", message: "The provided credentials are incorrect."}
                 user_banned:
-                  value: {error: "user_is_banned"}
+                  value:
+                    error: {code: "user_is_banned", message: "This account has been banned."}
                 user_inactive:
-                  value: {error: "user_inactive"}
+                  value:
+                    error: {code: "user_inactive", message: "This account has not been activated."}
         "422":
           description: Validation error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationError"
+        "429":
+          description: Too many login attempts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "too_many_requests", message: "Too many attempts. Please try again later."}
 
   /register:
     post:
@@ -175,17 +182,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                error: "registration_disabled"
+                error: {code: "registration_disabled", message: "User registration is currently disabled."}
         "422":
           description: Validation error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationError"
+        "429":
+          description: Too many registration attempts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "too_many_requests", message: "Too many attempts. Please try again later."}
 
   /account-activation:
     post:
-      summary: Activate a user account via email activation code
+      summary: Activate a user account and receive a JWT token for immediate login
       operationId: activateAccount
       tags: [Authentication]
       requestBody:
@@ -202,13 +217,24 @@ paths:
                   example: "1!abc123def456"
       responses:
         "200":
-          description: Account activated successfully
+          description: Account activated successfully — token and user returned for immediate login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
         "422":
           description: Invalid or expired activation code
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ValidationError"
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalid_code:
+                  value:
+                    error: {code: "invalid_activation_code", message: "The activation code is invalid or has already been used."}
+                user_not_found:
+                  value:
+                    error: {code: "user_not_found", message: "No user was found for the given activation code."}
 
   /forgot-password:
     post:
@@ -236,12 +262,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "user_not_found", message: "No active account was found for the given email address."}
         "422":
           description: Validation error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationError"
+        "429":
+          description: Too many password reset attempts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "too_many_requests", message: "Too many attempts. Please try again later."}
 
   /reset-password:
     post:
@@ -276,7 +312,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ValidationError"
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalid_code:
+                  value:
+                    error: {code: "invalid_reset_password_code", message: "The password reset code is invalid or has expired."}
+                invalid_user:
+                  value:
+                    error: {code: "invalid_user", message: "The password reset code contains invalid user information."}
 
   /refresh-token:
     post:
@@ -307,6 +350,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "could_not_refresh_token", message: "The token could not be refreshed."}
         "422":
           description: Validation error
           content:
@@ -333,12 +378,25 @@ paths:
                     $ref: "#/components/schemas/User"
         "401":
           description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                token_expired:
+                  value:
+                    error: {code: "token_expired", message: "The token has expired."}
+                token_invalid:
+                  value:
+                    error: {code: "token_invalid", message: "The token is invalid."}
         "404":
           description: User not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+              example:
+                error: {code: "user_not_found", message: "The authenticated user could not be found."}
 
   /logout:
     post:
@@ -352,6 +410,10 @@ paths:
           description: Logged out successfully
         "401":
           description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Could not invalidate token
           content:
@@ -359,4 +421,4 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                error: "could_not_invalidate_token"
+                error: {code: "could_not_invalidate_token", message: "The token could not be invalidated."}

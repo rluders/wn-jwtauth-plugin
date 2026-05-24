@@ -4,18 +4,19 @@ namespace RLuders\JWTAuth\Http\Controllers;
 
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Classes\JWTAuth;
 use RLuders\JWTAuth\Http\Requests\ActivationRequest;
+use RLuders\JWTAuth\Http\Responses\ErrorResponse;
 
 class ActivateController extends Controller
 {
     /**
-     * Activate the user
+     * Activate a user account and return a JWT token for immediate login.
      *
-     * @param JWTAuth           $auth
-     * @param ActivationRequest $request
-     *
-     * @return Illuminate\Http\Response
+     * @param  \RLuders\JWTAuth\Classes\JWTAuth                $auth
+     * @param  \RLuders\JWTAuth\Http\Requests\ActivationRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke(
         JWTAuth $auth,
@@ -24,40 +25,42 @@ class ActivateController extends Controller
         $code = $request->get('activation_code');
         $parts = explode('!', $code);
 
-        // @TODO Can I convert it as validator?
         if (count($parts) != 2) {
-            return response()->json(
-                ['error' => 'invalid_activation_code'],
+            return ErrorResponse::json(
+                ErrorCodes::INVALID_ACTIVATION_CODE,
+                'The activation code format is invalid.',
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
-        list($userId, $code) = $parts;
+        [$userId, $activationCode] = $parts;
 
-        // @TODO Can I convert it as validator?
-        if (!strlen(trim($userId)) || !strlen(trim($code))) {
-            return response()->json(
-                ['error' => 'invalid_user'],
+        if (!strlen(trim($userId)) || !strlen(trim($activationCode))) {
+            return ErrorResponse::json(
+                ErrorCodes::INVALID_USER,
+                'The activation code contains invalid user information.',
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
         if (!$user = $auth->findUserById($userId)) {
-            return response()->json(
-                ['error' => 'user_not_found'],
+            return ErrorResponse::json(
+                ErrorCodes::USER_NOT_FOUND,
+                'No user was found for the given activation code.',
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
-        if (!$user->attemptActivation($code)) {
-            return response()->json(
-                ['error' => 'invalid_activation_code'],
+        if (!$user->attemptActivation($activationCode)) {
+            return ErrorResponse::json(
+                ErrorCodes::INVALID_ACTIVATION_CODE,
+                'The activation code is invalid or has already been used.',
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
-        // @TODO Autologin
+        $token = $auth->fromUser($user);
 
-        return response()->json([]);
+        return response()->json(compact('token', 'user'));
     }
 }

@@ -2,15 +2,15 @@
 
 namespace RLuders\JWTAuth\Http\Controllers;
 
-use Mail;
-use Event;
 use Illuminate\Http\Response;
 use RLuders\JWTAuth\Models\User;
 use Illuminate\Routing\Controller;
+use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Classes\JWTAuth;
 use RLuders\JWTAuth\Models\Settings;
 use RLuders\JWTAuth\Http\Requests\RegisterRequest;
 use RLuders\JWTAuth\Http\Controllers\Traits\CanMakeUrl;
+use RLuders\JWTAuth\Http\Responses\ErrorResponse;
 use Winter\User\Models\Settings as WinterUserSettings;
 use RLuders\JWTAuth\Http\Controllers\Traits\CanSendMail;
 
@@ -20,20 +20,20 @@ class RegisterController extends Controller
         CanSendMail;
 
     /**
-     * Register the user
+     * Register a new user account.
      *
-     * @param JWTAuth         $auth
-     * @param RegisterRequest $request
-     *
-     * @return Illuminate\Http\Response
+     * @param  \RLuders\JWTAuth\Classes\JWTAuth               $auth
+     * @param  \RLuders\JWTAuth\Http\Requests\RegisterRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke(
         JWTAuth $auth,
         RegisterRequest $request
     ) {
         if (!$this->canRegister()) {
-            return response()->json(
-                ['error' => 'registration_disabled'],
+            return ErrorResponse::json(
+                ErrorCodes::REGISTRATION_DISABLED,
+                'User registration is currently disabled.',
                 Response::HTTP_UNAUTHORIZED
             );
         }
@@ -55,21 +55,21 @@ class RegisterController extends Controller
     }
 
     /**
-     * Check if the settings allow user registration
+     * Check if the settings allow user registration.
      *
-     * @return boolean
+     * @return bool
      */
-    protected function canRegister()
+    protected function canRegister(): bool
     {
         return WinterUserSettings::get('allow_registration', true);
     }
 
     /**
-     * Get the activation mode from configuration as string
+     * Get the activation mode from configuration as a string.
      *
-     * @return string
+     * @return string One of 'email', 'auto', or 'manual'.
      */
-    protected function getActivationMode()
+    protected function getActivationMode(): string
     {
         switch (WinterUserSettings::get('activate_mode')) {
             case WinterUserSettings::ACTIVATE_USER:
@@ -82,13 +82,12 @@ class RegisterController extends Controller
     }
 
     /**
-     * Sends the activation email to a user
+     * Send the activation email to the newly registered user.
      *
-     * @param User $user
-     *
+     * @param  \RLuders\JWTAuth\Models\User $user
      * @return void
      */
-    protected function sendActivationEmail(User $user)
+    protected function sendActivationEmail(User $user): void
     {
         $code = implode('!', [$user->id, $user->getActivationCode()]);
         $link = $this->makeActivationUrl($code);
@@ -108,13 +107,12 @@ class RegisterController extends Controller
     }
 
     /**
-     * Returns a link used to activate the user account.
+     * Build the account activation URL containing the activation code.
      *
-     * @param string $code
-     *
+     * @param  string $code Compound activation code in the format `{userId}!{code}`.
      * @return string
      */
-    protected function makeActivationUrl($code)
+    protected function makeActivationUrl(string $code): string
     {
         $url = Settings::get('activation_url');
         return $this->makeUrl($url, $code);

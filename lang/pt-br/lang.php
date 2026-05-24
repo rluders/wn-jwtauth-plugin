@@ -67,6 +67,14 @@ return [
             'decrypt_cookies' => [
                 'label' => 'Criptografar os cookies',
                 'comment' => 'Desligue-o se quiser descriptografar os cookies.'
+            ],
+            'throttle_max_attempts' => [
+                'label' => 'Rate Limit: Max Attempts',
+                'comment' => 'Maximum number of requests allowed per window for login, register, and forgot-password endpoints.'
+            ],
+            'throttle_decay_minutes' => [
+                'label' => 'Rate Limit: Window (minutes)',
+                'comment' => 'Length of the rate limiting window in minutes. Attempts reset after this period.'
             ]
         ]
     ]

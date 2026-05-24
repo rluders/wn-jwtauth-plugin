@@ -7,6 +7,7 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use System\Classes\PluginBase;
 use System\Classes\SettingsManager;
+use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Models\Settings as PluginSettings;
 
 /**
@@ -97,9 +98,8 @@ class Plugin extends PluginBase
 
                 return response()->json([
                     'error' => [
-                        'code'     => 'internal_error',
-                        'http_code' => 500,
-                        'message'  => $e->getMessage(),
+                        'code'    => ErrorCodes::INTERNAL_ERROR,
+                        'message' => $e->getMessage(),
                     ],
                 ], 500);
             });
