@@ -13,6 +13,7 @@ use RLuders\JWTAuth\Http\Controllers\Traits\CanMakeUrl;
 use RLuders\JWTAuth\Http\Responses\ErrorResponse;
 use Winter\User\Models\Settings as WinterUserSettings;
 use RLuders\JWTAuth\Http\Controllers\Traits\CanSendMail;
+use Event;
 
 class RegisterController extends Controller
 {
