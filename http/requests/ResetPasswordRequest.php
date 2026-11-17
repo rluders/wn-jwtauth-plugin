@@ -9,7 +9,7 @@ class ResetPasswordRequest extends Request
     /**
      * {@inheritDoc}
      */
-    public function data()
+    public function validationData()
     {
         $data = $this->all();
 
