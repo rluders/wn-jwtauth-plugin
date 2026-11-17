@@ -16,7 +16,7 @@ abstract class Request extends BaseRequest
      */
     public function validate()
     {
-        $validator = Validator::make($this->data(), $this->rules());
+        $validator = Validator::make($this->validationData(), $this->rules());
         if ($validator->fails()) {
             throw new JsonValidationException($validator);
         }
@@ -27,7 +27,7 @@ abstract class Request extends BaseRequest
      *
      * @return array
      */
-    public function data()
+    public function validationData()
     {
         return $this->all();
     }
