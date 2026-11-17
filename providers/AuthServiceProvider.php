@@ -15,6 +15,7 @@ use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Exceptions\JsonValidationException;
 use RLuders\JWTAuth\Http\Responses\ErrorResponse;
 use RLuders\JWTAuth\Models\Settings as PluginSettings;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthServiceProvider extends AbstractServiceProvider
 {
@@ -92,6 +93,35 @@ class AuthServiceProvider extends AbstractServiceProvider
                 ErrorCodes::TOKEN_EXPIRED,
                 'The token has expired.',
                 \Illuminate\Http\Response::HTTP_UNAUTHORIZED
+            );
+        });
+
+        // 401 from the jwt.auth middleware, which wraps token errors in
+        // UnauthorizedHttpException with the "jwt-auth" challenge. Other 401s are left alone.
+        $this->app->error(function (UnauthorizedHttpException $e) {
+            if (
+                !$this->app['request']->isJson()
+                || ($e->getHeaders()['WWW-Authenticate'] ?? null) !== 'jwt-auth'
+            ) {
+                return null;
+            }
+
+            $previous = $e->getPrevious();
+            if ($previous instanceof TokenExpiredException) {
+                [$code, $message] = [ErrorCodes::TOKEN_EXPIRED, 'The token has expired.'];
+            } elseif ($previous instanceof TokenBlacklistedException) {
+                [$code, $message] = [ErrorCodes::TOKEN_BLACKLISTED, 'The token has been blacklisted.'];
+            } elseif ($previous instanceof TokenInvalidException) {
+                [$code, $message] = [ErrorCodes::TOKEN_INVALID, 'The token is invalid.'];
+            } else {
+                [$code, $message] = [ErrorCodes::TOKEN_ERROR, $e->getMessage()];
+            }
+
+            return ErrorResponse::json(
+                $code,
+                $message,
+                \Illuminate\Http\Response::HTTP_UNAUTHORIZED,
+                $e->getHeaders()
             );
         });
 
