@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/rluders/wn-jwtauth-plugin/compare/v2.0.2...v2.0.3) (2026-11-20)
+
+
+### Bug Fixes
+
+* return JSON errors with Retry-After and jwt.auth 401s on Winter ([#81](https://github.com/rluders/wn-jwtauth-plugin/issues/81)) ([337878b](https://github.com/rluders/wn-jwtauth-plugin/commit/337878b7b33687d3977c900174a0ae6a7753bc59))
+
 ## [2.0.2](https://github.com/rluders/wn-jwtauth-plugin/compare/v2.0.1...v2.0.2) (2026-05-24)
 
 
