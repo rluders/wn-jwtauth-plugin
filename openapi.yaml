@@ -18,6 +18,12 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+  headers:
+    RetryAfter:
+      description: Seconds to wait before retrying.
+      schema:
+        type: integer
+
   schemas:
     Token:
       type: object
@@ -141,6 +147,9 @@ paths:
                 $ref: "#/components/schemas/ValidationError"
         "429":
           description: Too many login attempts
+          headers:
+            Retry-After:
+              $ref: "#/components/headers/RetryAfter"
           content:
             application/json:
               schema:
@@ -191,6 +200,9 @@ paths:
                 $ref: "#/components/schemas/ValidationError"
         "429":
           description: Too many registration attempts
+          headers:
+            Retry-After:
+              $ref: "#/components/headers/RetryAfter"
           content:
             application/json:
               schema:
@@ -272,6 +284,9 @@ paths:
                 $ref: "#/components/schemas/ValidationError"
         "429":
           description: Too many password reset attempts
+          headers:
+            Retry-After:
+              $ref: "#/components/headers/RetryAfter"
           content:
             application/json:
               schema:

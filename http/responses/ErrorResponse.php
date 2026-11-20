@@ -18,14 +18,16 @@ class ErrorResponse
      * @param string $code    Machine-readable error code (use ErrorCodes constants).
      * @param string $message Human-readable description of the error.
      * @param int    $status  HTTP status code.
+     * @param array  $headers Extra response headers (for example Retry-After).
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function json(string $code, string $message, int $status): JsonResponse
+    public static function json(string $code, string $message, int $status, array $headers = []): JsonResponse
     {
         return response()->json(
             ['error' => ['code' => $code, 'message' => $message]],
-            $status
+            $status,
+            $headers
         );
     }
 }

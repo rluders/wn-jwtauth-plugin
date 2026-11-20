@@ -4,7 +4,6 @@ namespace RLuders\JWTAuth\Providers;
 
 use Config;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Facades\RateLimiter;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenBlacklistedException;
@@ -16,6 +15,7 @@ use RLuders\JWTAuth\Classes\ErrorCodes;
 use RLuders\JWTAuth\Exceptions\JsonValidationException;
 use RLuders\JWTAuth\Http\Responses\ErrorResponse;
 use RLuders\JWTAuth\Models\Settings as PluginSettings;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthServiceProvider extends AbstractServiceProvider
 {
@@ -39,8 +39,10 @@ class AuthServiceProvider extends AbstractServiceProvider
     /**
      * Register JSON exception renderers for JWT and validation errors.
      *
-     * Handlers are evaluated in LIFO order (last registered = first checked),
-     * so the most specific exception types are registered last.
+     * Winter's error page answers before Laravel's renderable() callbacks run, so
+     * these use Winter's $app->error() handlers, which run first. Handlers are
+     * evaluated in LIFO order (last registered = first checked), so the most
+     * specific exception types are registered last.
      *
      * @return void
      */
@@ -49,80 +51,104 @@ class AuthServiceProvider extends AbstractServiceProvider
         // Generic fallback for any JWTException not caught by a controller.
         // Controllers that need a specific status code (e.g. 403 on refresh)
         // catch the exception themselves before it reaches this handler.
-        $this->app->make(ExceptionHandler::class)
-            ->renderable(function (JWTException $e, $request) {
-                if (!$request->isJson()) {
-                    return null;
-                }
-                return ErrorResponse::json(
-                    ErrorCodes::TOKEN_ERROR,
-                    $e->getMessage(),
-                    \Illuminate\Http\Response::HTTP_UNAUTHORIZED
-                );
-            });
+        $this->app->error(function (JWTException $e) {
+            if (!$this->app['request']->isJson()) {
+                return null;
+            }
+            return ErrorResponse::json(
+                ErrorCodes::TOKEN_ERROR,
+                $e->getMessage(),
+                \Illuminate\Http\Response::HTTP_UNAUTHORIZED
+            );
+        });
 
         // More specific JWT exception types — override the fallback above.
-        $this->app->make(ExceptionHandler::class)
-            ->renderable(function (TokenInvalidException $e, $request) {
-                if (!$request->isJson()) {
-                    return null;
-                }
-                return ErrorResponse::json(
-                    ErrorCodes::TOKEN_INVALID,
-                    'The token is invalid.',
-                    \Illuminate\Http\Response::HTTP_UNAUTHORIZED
-                );
-            });
+        $this->app->error(function (TokenInvalidException $e) {
+            if (!$this->app['request']->isJson()) {
+                return null;
+            }
+            return ErrorResponse::json(
+                ErrorCodes::TOKEN_INVALID,
+                'The token is invalid.',
+                \Illuminate\Http\Response::HTTP_UNAUTHORIZED
+            );
+        });
 
-        $this->app->make(ExceptionHandler::class)
-            ->renderable(function (TokenBlacklistedException $e, $request) {
-                if (!$request->isJson()) {
-                    return null;
-                }
-                return ErrorResponse::json(
-                    ErrorCodes::TOKEN_BLACKLISTED,
-                    'The token has been blacklisted.',
-                    \Illuminate\Http\Response::HTTP_UNAUTHORIZED
-                );
-            });
+        $this->app->error(function (TokenBlacklistedException $e) {
+            if (!$this->app['request']->isJson()) {
+                return null;
+            }
+            return ErrorResponse::json(
+                ErrorCodes::TOKEN_BLACKLISTED,
+                'The token has been blacklisted.',
+                \Illuminate\Http\Response::HTTP_UNAUTHORIZED
+            );
+        });
 
-        $this->app->make(ExceptionHandler::class)
-            ->renderable(function (TokenExpiredException $e, $request) {
-                if (!$request->isJson()) {
-                    return null;
-                }
-                return ErrorResponse::json(
-                    ErrorCodes::TOKEN_EXPIRED,
-                    'The token has expired.',
-                    \Illuminate\Http\Response::HTTP_UNAUTHORIZED
-                );
-            });
+        $this->app->error(function (TokenExpiredException $e) {
+            if (!$this->app['request']->isJson()) {
+                return null;
+            }
+            return ErrorResponse::json(
+                ErrorCodes::TOKEN_EXPIRED,
+                'The token has expired.',
+                \Illuminate\Http\Response::HTTP_UNAUTHORIZED
+            );
+        });
 
-        // Rate limit exceeded.
-        $this->app->make(ExceptionHandler::class)
-            ->renderable(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, $request) {
-                if (!$request->isJson()) {
-                    return null;
-                }
-                return ErrorResponse::json(
-                    ErrorCodes::TOO_MANY_REQUESTS,
-                    'Too many attempts. Please try again later.',
-                    \Illuminate\Http\Response::HTTP_TOO_MANY_REQUESTS
-                );
-            });
+        // 401 from the jwt.auth middleware, which wraps token errors in
+        // UnauthorizedHttpException with the "jwt-auth" challenge. Other 401s are left alone.
+        $this->app->error(function (UnauthorizedHttpException $e) {
+            if (
+                !$this->app['request']->isJson()
+                || ($e->getHeaders()['WWW-Authenticate'] ?? null) !== 'jwt-auth'
+            ) {
+                return null;
+            }
+
+            $previous = $e->getPrevious();
+            if ($previous instanceof TokenExpiredException) {
+                [$code, $message] = [ErrorCodes::TOKEN_EXPIRED, 'The token has expired.'];
+            } elseif ($previous instanceof TokenBlacklistedException) {
+                [$code, $message] = [ErrorCodes::TOKEN_BLACKLISTED, 'The token has been blacklisted.'];
+            } elseif ($previous instanceof TokenInvalidException) {
+                [$code, $message] = [ErrorCodes::TOKEN_INVALID, 'The token is invalid.'];
+            } else {
+                [$code, $message] = [ErrorCodes::TOKEN_ERROR, $e->getMessage()];
+            }
+
+            return ErrorResponse::json(
+                $code,
+                $message,
+                \Illuminate\Http\Response::HTTP_UNAUTHORIZED,
+                $e->getHeaders()
+            );
+        });
+
+        // Rate limit exceeded. Keep the limiter's Retry-After and X-RateLimit-* headers.
+        $this->app->error(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e) {
+            if (!$this->app['request']->isJson()) {
+                return null;
+            }
+            return ErrorResponse::json(
+                ErrorCodes::TOO_MANY_REQUESTS,
+                'Too many attempts. Please try again later.',
+                \Illuminate\Http\Response::HTTP_TOO_MANY_REQUESTS,
+                $e->getHeaders()
+            );
+        });
 
         // Validation errors from request classes.
-        $this->app->make(ExceptionHandler::class)
-            ->renderable(function (JsonValidationException $exception, $request) {
-                if ($request->isJson()) {
-                    return response()->json(
-                        $exception->toArray(),
-                        $exception->getStatusCode(),
-                        $exception->getHeaders()
-                    );
-                }
+        $this->app->error(function (JsonValidationException $exception) {
+            if (!$this->app['request']->isJson()) {
                 return null;
-            });
+            }
+            return response()->json(
+                $exception->toArray(),
+                $exception->getStatusCode(),
+                $exception->getHeaders()
+            );
+        });
     }
 
     /**
